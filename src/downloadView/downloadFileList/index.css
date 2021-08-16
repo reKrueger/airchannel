@@ -1,0 +1,71 @@
+
+
+
+.File_list_frame{
+    width: 100%;
+    height: auto;
+    
+
+}
+
+
+.list_item{
+    margin-top: 2.5%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* item */
+.download_item_frame{
+    height: 9vh;
+    width: 95%;
+    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
+    border-radius: 1vh;
+    margin-bottom: 0.5vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+
+
+}
+
+.download_item_icon_div{
+    width: auto;
+    margin-left: 0.6vh;
+}
+
+.download_item_icon{
+    width: auto;
+    height: auto;
+    
+}
+
+.download_item_name_div{
+    width: 85%;
+    height: auto;
+    word-wrap: break-word;
+    font-size: 1em;
+
+}
+
