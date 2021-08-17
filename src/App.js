@@ -85,7 +85,6 @@ export default class App extends React.Component{
   
 
   
-
   render(){
     return (
       <div className='app_window' style={{height: this.state.height}}>
