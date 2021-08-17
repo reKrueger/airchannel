@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Route, Switch} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import UploadView from './uploadView'
 import DownloadView from './downloadView'
 import { VscThreeBars } from "react-icons/vsc";
@@ -8,6 +8,9 @@ import colors from './colors'
 import air from './AIR_1024px.png'
 import BG from './background'
 import api from './api'
+
+
+
 
 // <img style={backgroundImg} src="https://picsum.photos/1500/900?random=1" alt='random_pic!'/>
 const Beta = <div className='open_beta'>open beta</div>
@@ -55,16 +58,14 @@ export default class App extends React.Component{
 
   routing = ()=> {
     return (
-      <BrowserRouter>
         <Switch>
-          <Route exact path="/airchannel/" render={(props) => (
+          <Route exact path="/" render={(props) => (
               <UploadView {...props} mobile={this.state.mobile} />
               )}></Route>
-          <Route exact path="/airchannel/:id" render={(props) => (
+          <Route  path="/:id" render={(props) => (
               <DownloadView {...props} mobile={this.state.mobile} />
               )}></Route>
           </Switch> 
-      </BrowserRouter>
 
     );
   }
