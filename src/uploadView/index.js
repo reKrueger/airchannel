@@ -262,7 +262,7 @@ export default class UploadView extends React.Component{
             if(data.link){
                 const download_link =  data.link
                 if (typeof window !== 'undefined') {
-                    const path = window.location.protocol + '//' + window.location.host + download_link; 
+                    const path = window.location.protocol + '//' + window.location.host +'/'+  download_link; 
                     //console.log('show download link ', download_link)
                     this.setState({use_link: path})
                 }
