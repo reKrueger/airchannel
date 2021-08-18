@@ -54,7 +54,7 @@ const configForm = {
   }
 }
 
-const _url = window.location.hostname=='localhost'? 'http://127.0.0.1:5000/transmit/' :  process.env.REACT_APP_API_BASE_URL 
+const _url = window.location.hostname=='localhost'? 'http://127.0.0.1:8000/transmit/' :  process.env.REACT_APP_API_BASE_URL 
 
 
 const api = axios.create({

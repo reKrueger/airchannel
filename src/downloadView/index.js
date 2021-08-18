@@ -92,7 +92,7 @@ export default class DownloadView extends React.Component{
 
 
   downloadFiles = async(file)=>{ 
-    const _url = window.location.hostname=='localhost'? 'http://127.0.0.1:5000/transmit/' :  process.env.REACT_APP_API_BASE_URL
+    const _url = window.location.hostname=='localhost'? 'http://127.0.0.1:8000/transmit/' :  process.env.REACT_APP_API_BASE_URL
     const token =  '6ca12987d9feb7e0f8b523fdeb0c27_ce'
     const {origin_name, filename, file_size, extension } = file
     this.setState({showProgress:true})
@@ -103,7 +103,7 @@ export default class DownloadView extends React.Component{
         const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         this.setState({counter:percentage})
       },
-      url: _url + '/download/' + filename,
+      url: _url + 'download/' + filename,
       method: 'get',
       headers:{
         'Authorization': `${token}`,
