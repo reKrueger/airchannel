@@ -1,6 +1,5 @@
 import React from 'react';
 import './index.css';
-import Dialog from '@material-ui/core/Dialog';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -8,6 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import { alertView } from '../alertViews';
 import api from './../api'
+import { colors } from '@material-ui/core';
 
 
 const placeholder = ' schreibe eine Nachricht an den Empfänger...'
@@ -26,7 +26,8 @@ export class ViewText extends React.Component {
             mail_user: '',
             mail_to: '',
             send_option:'link',
-            download_option: 'einmalig'
+            download_option: 'einmalig',
+            visible: true
 
         }
         this.wrapper = React.createRef();
@@ -161,7 +162,7 @@ export class ViewText extends React.Component {
                 )
             case 'einmalig':
                 return (
-                    <div className='sendview_info_text'> "Nach dem erstem Dowload werden alle Daten der Übertragung gelöscht, kein weiter Download mehr möglich"</div>
+                    <div className='sendview_info_text'> "Nach dem erstem Dowload werden alle Daten der Übertragung gelöscht, kein weiter Download mehr möglich. Automatisch wird dein Upload nach 7 Tagen gelöscht!"</div>
                 )
         }
     }
@@ -217,20 +218,17 @@ export class ViewText extends React.Component {
     }
 
 
-    
+    hide() {
+        this.setState({ visible: false });
+    }
     
 
     render() {
         
         return (
-            <Dialog
-                ref={this.props.refi}
-                PaperProps={{ style: { borderRadius: 6 } }}
-                className={this.props.mobile?'send_view_dialog_mobile':'send_view_dialog'}
-                open={this.props.open === true}
-                fullScreen>
-                <div className='send_view_frame'>
-                    <div className='send_view_div'>
+            <div className={this.props.mobile?'send_view_dialog_mobile':'send_view_dialog'}>
+                <div className={this.props.mobile?'send_view_frame_mobile':'send_view_frame_mobile'}>
+                    <div className='send_view_title_div'>
                         Datenübertragung
                     </div>
                     <div className='send_view_change_zone'>{this.radioSwitchDownload()}</div>
@@ -240,12 +238,10 @@ export class ViewText extends React.Component {
                     </div>
                     <div className='send_view_btn_div'>
                         <button className='send_btn' onClick={() => this.props.close()}>abbruch</button>
-                        <button className='send_btn' onClick={() => this.send_info()}>senden</button>
+                        <button className='send_btn' style={{color: colors.blue}} onClick={() => this.send_info()}>senden</button>
                     </div>
-
-
                 </div>
-            </Dialog>
+            </div>
         );
     }
 }

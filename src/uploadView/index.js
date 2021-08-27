@@ -1,63 +1,39 @@
 
   
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import './index.css'
 import api from './../api'
-import extensionList from './../extensions'
 import ProgressBar from './../progressbar'
 import Itemlist from './uploadFileList'
 import FinishView from './uploadFinishView'
 import SendView from './../sendView'
 import colors from './../colors'
-import { VscDiffAdded, VscThumbsdown } from "react-icons/vsc";
+import { VscDiffAdded } from "react-icons/vsc";
 import { alertView } from '../alertViews';
-import { isPlusToken } from 'typescript';
+import Modal from 'react-modal';
+import roundFileSize from '../helpers/roundFileSze';
 
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      border: 'none',
+      borderRadius: '12px'
+    },
+};
 
 
 
 
 const CHUNK_SIZE = 1048576 * 3;//its 3MB, increase the number measure in mb
 
-function get_ext(arr){
-  const extension = []
-  const extList = [].concat.apply([], Object.values(extensionList))
-  arr.forEach((e)=>{
-    if(extList.find(ext => ext==='.'+e.toLowerCase())){
-      if(!extension.includes(e.toLowerCase())){
-        extension.push(e.toLowerCase())
-      }
-      
-      
-      
-    }
 
-  })
-  //console.log('extension ', extension)
-  switch(extension.length){
-    
-    case 1:
-      return `.${extension[0]}`
-    case 2: 
-      return `.${extension[0]}.${extension[1]}`
-    default:
-      window.alert('fehler bei extensions')
-      return ''
-  }
-  
-    
-
-  
-}
-
-
-
-  
-
-
-
-
+ 
 export default class UploadView extends React.Component{
     constructor(props){
         super(props);
@@ -73,10 +49,17 @@ export default class UploadView extends React.Component{
             openSendView: false,
             use_link: null,
             use_email: null,
-            upload_success: false
+            upload_success: false,
+            visible: false
 
         }
-        this.wrapper = React.createRef();
+        
+    }
+
+    hide=()=> {
+        console.log('close')
+        this.setState({openSendView: false})
+        
     }
   
   
@@ -166,7 +149,11 @@ export default class UploadView extends React.Component{
         form.append('message', infos.message)
         form.append('use_download', infos.useDownload)
         form.append('use_link', infos.useLink)
+        //
         // create Major Model
+        //
+        //
+        //
         const majorId = await api.create_major(form).then(res=>{
             //console.log('res => ceate ', res)
             if(res.data.isSuccess){
@@ -175,8 +162,10 @@ export default class UploadView extends React.Component{
                 return null
             }
         }) 
+        // start loop of  all chunks
         if (majorId){
             for (const file of files) {
+                // this file begins
                 await this.chunk_loop(file, majorId)
                
             }
@@ -198,7 +187,9 @@ export default class UploadView extends React.Component{
             //
             chunk_size_start = chunk_size_start + chunk.size
             chunk_test = chunk_test + chunk.size
-
+            console.log(chunk_test, '   test')
+            console.log(chunk_size_start, '   chunk size start')
+            console.log(chunk.size, '   chunk size ')
             await this.uploadChunks(chunk, count, file, id)
             if(count === file.chunk_count){
                 break
@@ -225,7 +216,8 @@ export default class UploadView extends React.Component{
             form.append('filename', file.file_guid)
             form.append('file_size', file.file_size)
             form.append('origin_name', file.origin_name)
-            form.append('extension', get_ext(file.file_data.name.split('.')))
+            form.append('extension', file.file_data.name.split('.').slice(-1)[0])
+           
             const response = await api.insertfile(form)
           
             const data = response.data;
@@ -318,12 +310,14 @@ export default class UploadView extends React.Component{
     }
 
     
+    
+
+    
   
   
     // if file in Upload list
     // show button to open send menu
     readyToSend = ()=>{
-        
         return(
             <div className='ready_to_send_div'> 
                 <button className='start_upload_btn' hidden={this.state.openSendView} onClick={()=>this.setState({openSendView: true})}>senden</button>
@@ -331,26 +325,11 @@ export default class UploadView extends React.Component{
         )
     }
 
-    roundFileSize = (size)=>{
-        // kilo bytes
-        const kb_size = Math.round(size / 1000) 
-        //mega bytes
-        if(kb_size > 1000){
-            const mb_size = Math.round(size / 100000) / 10 
-            // giga bytes
-            if(mb_size > 2000){
-                const gb_size = Math.round(size / 10000000) / 100 
-                return gb_size + '  GB'
-            }
-            return mb_size + '  MB'
-        }
-        return kb_size + '  KB'
-    }
+    
 
     bottomView = (files)=>{
-
         const {full_size, upload_success} = this.state
-        const upload_size = 'gesamt '+this.roundFileSize(full_size)
+        const upload_size = 'gesamt '+ roundFileSize(full_size)
         if(upload_success){
             return(
                 <div className='div_input_upload' onClick={()=>this.newFileUpload()}>
@@ -361,6 +340,7 @@ export default class UploadView extends React.Component{
                 </div>
             )
         }else{
+            console.log(this.state.openSendView)
             const show_text = files.length>0 ? upload_size : 'hinzufügen von Dateien'
             return(
                 <div className='div_input_upload'>
@@ -368,8 +348,26 @@ export default class UploadView extends React.Component{
                         <input  className='input_upload'   type='file' multiple onChange={this.getFileContext} />
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
-                    <div className='text_input_upload'>{show_text}</div>
+                    <div className='text_input_upload_size'>{show_text}</div>
                     {files.length>0 ? this.readyToSend() : null}
+                    <div className='rodal_div' >
+                        <Modal
+                            style={customStyles}
+                            isOpen={this.state.openSendView} 
+                            onRequestClose={this.hide}
+                            ariaHideApp={false}
+                
+                        >
+                            <SendView 
+                                open={this.state.openSendView} 
+                                close={this.hide} 
+                                infos={(infos)=>this.send(infos)} 
+                                mobile={this.props.mobile} 
+                                newOpen={()=>this.setState({openSendView: true})}
+                            />
+                    
+                        </Modal>
+                    </div>
                 </div>
             )
         }
@@ -379,9 +377,10 @@ export default class UploadView extends React.Component{
 
 
     render(){
-        
+        console.log(CHUNK_SIZE)
         const {showProgress, files, progress, full_count, use_email, use_link, upload_success, full_size} = this.state
             return (
+                
                 <div className='frame_input_upload'>
                     {!showProgress?
                         this.bottomView(files)
@@ -390,14 +389,7 @@ export default class UploadView extends React.Component{
                     }
                     {files.length>0 ? <div className='upload_list'><Itemlist items={files} removeItem={(e)=>this.removeItem(e)}/></div> : null}
                     {use_link ? <div className='upload_finish'><FinishView link={use_link} return={()=>console.log('........wiederholung......')}/></div> : null}
-                    <SendView 
-                        open={this.state.openSendView} 
-                        close={()=>this.setState({openSendView: false})} 
-                        infos={(infos)=>this.send(infos)} 
-                        mobile={this.props.mobile} 
-                        newOpen={()=>this.setState({openSendView: true})}
-                        refi={this.wrapper}
-                        />
+                    
                 </div>
             )
     }

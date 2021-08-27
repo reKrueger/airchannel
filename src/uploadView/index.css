@@ -1,17 +1,35 @@
+.rodal_div_{
+  position: relative;
+  bottom: 12vh;
+  height: 88vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border-radius: 30px;
+}
+.rodal_class{
+  height: 730px;
+  width: 400px;
+  width:48% !important; 
+  top:20%;
 
 
+}
 
 
 .frame_input_upload{
     width: 100%;
     background: rgba(187, 187, 187, 0.486);
       
-    }
+  }
+
 .div_input_upload{
   width: auto;
   height: 12vh;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }  
     
@@ -42,7 +60,14 @@
     
   .text_input_upload{
     word-wrap: unset;
-    width: 100%;
+    width: auto;
+    font-weight: 600;
+
+  }
+  .text_input_upload_size{
+    word-wrap: unset;
+    width: 9em;
+    font-weight: 600;
   }
 
   .ready_to_send_div{

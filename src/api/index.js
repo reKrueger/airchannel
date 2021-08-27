@@ -28,9 +28,14 @@ import AxiosStream from "axios-stream";
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
-const token =  '6ca12987d9feb7e0f8b523fdeb0c27_ce'
 
-//const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64')
+const is_local = window.location.hostname ==='localhost'
+
+const hostUrl = process.env.REACT_APP_API_BASE_URL 
+const autori = is_local? 'local' : process.env.REACT_APP_AUTORI
+const _url = is_local? 'http://127.0.0.1:8000/transmit/' : hostUrl 
+
+
 
 const configPing = {
   headers: { 
@@ -41,20 +46,14 @@ const configPing = {
 
 const configForm_ = {
   headers: { 
-    'Authorization': `${token}`,
-    'Content-Type': 'multipart/form-data;boundary=boundary',
-    'Accept': 'application/json;text/plain'
-  }
-}
-//'Content-Type': 'multipart/form-data;boundary=boundary',
-const configForm = {
-  headers: { 
+    'Authorization': `${autori}`,
     'Content-Type': 'multipart/form-data;boundary=boundary',
     'Accept': 'application/json;text/plain'
   }
 }
 
-const _url = window.location.hostname=='localhost'? 'http://127.0.0.1:8000/transmit/' :  process.env.REACT_APP_API_BASE_URL 
+
+
 
 
 const api = axios.create({

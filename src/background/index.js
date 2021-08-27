@@ -2,9 +2,9 @@ import React, {Suspense} from 'react'
 import {useImage} from 'react-image'
  
 function MyImageComponent() {
-    const _width = window.innerWidth
-    const _height = window.innerHeight
-    console.log( 'w . ', _width, ' h . ', _height)
+    const _width = window.screen.width
+    const _height = window.screen.height
+    //console.log( 'w . ', _width, ' h . ', _height)
     const {src} = useImage({
         srcList: `https://picsum.photos/${_width}/${_height}?random=1`,
     })
@@ -12,9 +12,9 @@ function MyImageComponent() {
     return <img src={src} />
 }
  
-export default function Mybackground() {
+export default function Appbackground() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div style={{height: '100%', width:'100%', background:'rgba(187, 187, 187, 0.486)'}}></div>}>
       <MyImageComponent />
     </Suspense>
   )

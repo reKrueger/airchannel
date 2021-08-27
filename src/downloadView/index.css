@@ -27,9 +27,7 @@
     left: 1vh;
     overflow-y: scroll;
     overflow-x: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.105);
     border-radius: 1vh;
-    background: rgba(187, 187, 187, 0.486);
 }
 
 .download_message_text{
@@ -63,4 +61,12 @@
 .div_input_upload_progressbar_full{
     width: 100%;
     height: 100%;
+}
+
+.download_info_btn_div{
+    width: auto;
+    margin-left: 1em;
+}
+.download_info_btn_div:hover{
+    cursor: pointer;
 }

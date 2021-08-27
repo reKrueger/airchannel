@@ -1,25 +1,19 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import { Route, Switch} from 'react-router-dom';
 import UploadView from './uploadView'
 import DownloadView from './downloadView'
 import { VscThreeBars } from "react-icons/vsc";
 import colors from './colors'
 import air from './AIR_1024px.png'
-import BG from './background'
+import Bg from './background'
 import api from './api'
 
 
 
-
-// <img style={backgroundImg} src="https://picsum.photos/1500/900?random=1" alt='random_pic!'/>
 const Beta = <div className='open_beta'>open beta</div>
 
-const backgroundImg = {
-    "width": "100%",
-    "height": "100%",
-    "object-fit": "cover",
-}
+
 
 
 export default class App extends React.Component{
@@ -28,7 +22,8 @@ export default class App extends React.Component{
     super(props);
     this.state={
       mobile: false,
-      height: ''
+      height: '',
+      backend: false,
     }
       
 
@@ -37,9 +32,11 @@ export default class App extends React.Component{
   componentDidMount(){
     this.createPing()
     window.addEventListener("resize", this.updateWindowDimensions());
-    console.log(window.location.hostname)
     this.setState({height: window.innerHeight + "px"})
   }
+
+  
+
   updateWindowDimensions() {
     const mobile = window.innerWidth<=600
     document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
@@ -52,36 +49,26 @@ export default class App extends React.Component{
 
   createPing = async()=>{
     await api.create_ping().then(res=>{
-      console.log(res.data)
+      if(res.data.isSuccess){
+        this.setState({backend: true})
+      }
     })
   }
+
 
   routing = ()=> {
     return (
         <Switch>
           <Route exact path="/" render={(props) => (
-              <UploadView {...props} mobile={this.state.mobile} />
+              <UploadView {...props} mobile={this.state.mobile} backend={this.state.backend} />
               )}></Route>
           <Route  path="/:id" render={(props) => (
-              <DownloadView {...props} mobile={this.state.mobile} />
+              <DownloadView {...props} mobile={this.state.mobile} backend={this.state.backend} />
               )}></Route>
-          </Switch> 
-
+        </Switch> 
     );
   }
 
-  randomBackground = ()=>{
-    const rgb_1 = Math.floor(Math.random() * 256)
-    const rgb_2 = Math.floor(Math.random() * 256)
-    const rgb_3 = Math.floor(Math.random() * 256)
-    const rgb_4 = Math.floor(Math.random() * 256)
-    const rgb_5 = Math.floor(Math.random() * 256)
-    const rgb_6 = Math.floor(Math.random() * 256)
-    const contrast = rgb_1 + rgb_2 + rgb_3 + rgb_4 + rgb_5 + rgb_6
-    //console.log('contrast', contrast)
-    const style = `radial-gradient(rgb(${rgb_1}, ${rgb_2}, ${rgb_3}), rgb(${rgb_4}, ${rgb_5}, ${rgb_6}))`
-    return {'background':'white' }
-  }
 
   
 
@@ -94,7 +81,7 @@ export default class App extends React.Component{
           <div className='menu'>
             <div className='menu_icon'><VscThreeBars size={30} color={colors.white}/> </div></div>
         </div>
-        <div className='unkown_view' style={this.randomBackground()}><BG/></div>
+        <div className='unkown_view'><Bg/></div>
         <div className='actions_view'>{this.routing()}</div>
       </div>
     );
