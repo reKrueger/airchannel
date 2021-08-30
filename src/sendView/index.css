@@ -10,7 +10,6 @@
     width: 30vw;
     min-width: 380px;
     height: auto;
-    margin: auto;
     border-radius: 12px;
     overflow-y: scroll;
 }
@@ -31,10 +30,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     background: transparent;
-    margin: 0 auto;
+    margin: 0 auto; 
 }
 
 .send_view_frame_mobile{
@@ -95,8 +94,8 @@
 
 .send_view_change_zone{
     width: 100%;
-    height: 30vh;
-    margin-bottom: 4px;
+    height: auto;
+    margin-bottom: 24px;
 }
 
 .send_view_change_zone_div{
@@ -121,7 +120,7 @@
 
 .send_view_show_options{
     width: 98%;
-    height: 40em;
+    height: 10em;
     display: flex;
     flex-direction: column;
     justify-content: center;

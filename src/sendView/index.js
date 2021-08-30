@@ -1,6 +1,7 @@
 import React from 'react';
 import './index.css';
 import Radio from '@material-ui/core/Radio';
+import Switch from '@material-ui/core/Switch';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -26,7 +27,6 @@ export class ViewText extends React.Component {
             mail_user: '',
             mail_to: '',
             send_option:'link',
-            download_option: 'einmalig',
             visible: true
 
         }
@@ -62,10 +62,9 @@ export class ViewText extends React.Component {
     };
 
     handleDownload = (event) => {
-        const used = event.target.value
-        const is_used = used == '12'? false : true
-        console.log('radio ', used, '  is ', is_used)
-        this.setState({download_option: used, useDownload: is_used});
+        //const used = event.target.value
+        const is_used = this.state.useDownload === true? false : true
+        this.setState({useDownload: is_used});
     };
     
 
@@ -141,11 +140,11 @@ export class ViewText extends React.Component {
             <div className='send_view_change_zone_div'>
                 <div className='send_view_radio_div'>
                     <FormControl >
-                        <FormLabel className='send_view_formlabel'>Download</FormLabel>
-                        <RadioGroup  value={this.state.download_option} onChange={this.handleDownload}>
-                            <FormControlLabel value="einmalig" control={<Radio color="default"  />} label="einmaliger Download" />
-                            <FormControlLabel value="12" control={<Radio color="default"/>} label="innerhalb 12 Stunden" />
-                        </RadioGroup>
+                    <FormLabel className='send_view_formlabel'>Download</FormLabel>
+                    <FormControlLabel control={
+                        <Switch size="Normal" color='blue' checked={this.state.useDownload} onChange={this.handleDownload} />}
+                        label="einmaliger Download"
+                        />
                     </FormControl>
                 </div>
                 {this.downloadOptionText()}
@@ -154,17 +153,17 @@ export class ViewText extends React.Component {
     }
 
     downloadOptionText = () => {
-        const { download_option } = this.state
-        switch(download_option){
-            case '12':
-                return (
-                    <div className='sendview_info_text'> "Dein Upload wird 12 Stunden gespeichert, er steht so oft und zur jeder Zeit zum Download bereit"</div>
-                )
-            case 'einmalig':
-                return (
-                    <div className='sendview_info_text'> "Nach dem erstem Dowload werden alle Daten der Übertragung gelöscht, kein weiter Download mehr möglich. Automatisch wird dein Upload nach 7 Tagen gelöscht!"</div>
-                )
+        const { useDownload } = this.state
+        if(useDownload){
+            return (
+                <div className='sendview_info_text'> "Nach dem erstem Dowload werden alle Daten der Übertragung gelöscht, kein weiter Download mehr möglich. Automatisch wird dein Upload nach 7 Tagen gelöscht!"</div>
+            )
+        }else{
+            return (
+                <div className='sendview_info_text'> "Dein Upload wird 12 Stunden gespeichert, er steht so oft und zur jeder Zeit zum Download bereit"</div>
+            )
         }
+        
     }
 
     send_info = async()=>{
@@ -227,7 +226,7 @@ export class ViewText extends React.Component {
         
         return (
             <div className={this.props.mobile?'send_view_dialog_mobile':'send_view_dialog'}>
-                <div className={this.props.mobile?'send_view_frame_mobile':'send_view_frame_mobile'}>
+                <div className={this.props.mobile?'send_view_frame_mobile':'send_view_frame'}>
                     <div className='send_view_title_div'>
                         Datenübertragung
                     </div>
