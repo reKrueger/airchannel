@@ -24,9 +24,7 @@ export default class FileList extends React.Component{
     }
 
     componentDidUpdate(prevProps){
-      console.log(prevProps, '   prevprps')
       if(this.props.items.length !== prevProps.items.length){
-        console.log('items length änderung')
       }
     }
 

@@ -159,7 +159,6 @@ export default class DownloadView extends React.Component{
 
   }
 
-
   messageView = ()=>{
     const {message} = this.state
     return(

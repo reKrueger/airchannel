@@ -16,24 +16,29 @@ const ProgressBar = (props) => {
       width: '90%',
       backgroundColor: "rgba(255, 255, 255, 0.512)",
       borderRadius: '3vh',
+      overflow: 'hidden',
       
     }
   
     const fillerStyles = {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
       height: '100%',
       width: `${counter}%`,
-      borderRadius: '3vh',
       backgroundColor: colors.black,
     }
   
     const labelStyles = {
+      position: 'absolute',
       color: 'white',
-      height: '100%',
+      height: 'auto',
+      minWidth: '50px',
       fontWeight: 'bold',
       display: 'flex',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginRight: '10px'
+      marginRight: '5px',
     }
     
     const progressDiv = {
@@ -52,7 +57,7 @@ const ProgressBar = (props) => {
       <div style={progressDiv}>
         <div style={containerStyles}>
           <div style={fillerStyles}>
-            <span style={labelStyles}>{`${Math.round(counter)} %`}</span>
+            <span style={labelStyles}>{`${Math.floor(counter)} %`}</span>
           </div>
         </div>
       </div>

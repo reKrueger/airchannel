@@ -66,6 +66,8 @@ export const create_ping = () => api.get(`ping/`, configPing)
 export const create_major = form => api.post(`major/`, form, configForm_)
 export const is_major_detail = sender => api.get(`major/${sender}`, configForm_)
 
+export const start_chunk_upload = form => api.post(`preparation/`,form , configForm_)
+
 export const insertfile = form => api.post(`upload/`,form , configForm_)
 export const get_Item = form => api.get(`upload/`, form, configForm_)
 export const upload_detail = id => api.get(`upload/${id}`, configForm_)
@@ -87,7 +89,8 @@ const apis = {
   download_stream,
   is_mail_detail,
   insertfile,
-  create_ping
+  create_ping,
+  start_chunk_upload
 
     
 }

@@ -30,6 +30,7 @@ const customStyles = {
 
 
 
+
 const CHUNK_SIZE = 1048576 * 3;//its 3MB, increase the number measure in mb
 
 
@@ -47,10 +48,11 @@ export default class UploadView extends React.Component{
             endOfTheChunk: CHUNK_SIZE,
             progress: 0,
             openSendView: false,
-            use_link: null,
-            use_email: null,
+            mailConfirm: '',
             upload_success: false,
-            visible: false
+            visible: false,
+            link: '',
+            isLink: null,
 
         }
         
@@ -141,8 +143,7 @@ export default class UploadView extends React.Component{
 
 
 
-    file_loop = async (files, infos) => {
-
+    createMajor = async (files, infos) => {
         const form = new FormData()
         form.append('mail_to', infos.mail_to)
         form.append('mail_user', infos.mail_user)
@@ -166,48 +167,53 @@ export default class UploadView extends React.Component{
         if (majorId){
             for (const file of files) {
                 // this file begins
-                await this.chunk_loop(file, majorId)
+                await this.counterOfFile(file, majorId)
                
             }
         }
-        
-        
+         
     }
 
 
 
 
-    chunk_loop = async (file, id) => {
+    counterOfFile = async(file, id) => {
         var chunk_size_start = 0
-        var chunk_test = 0
 
         for (var count=1; ; count++ ) {
+            var percentage = (count / file.chunk_count) * 100;
 
-            var chunk = file.file_data.slice(chunk_size_start, CHUNK_SIZE + chunk_size_start);
-            //
+            const chunk = file.file_data.slice(chunk_size_start, CHUNK_SIZE + chunk_size_start);
+            this.setState({progress: percentage})
+
+            const isUpload = await this.chunk_loop(chunk, file,id, count)
+            if(!isUpload){
+                console.log('upload error')
+                break
+            }
+
             chunk_size_start = chunk_size_start + chunk.size
-            chunk_test = chunk_test + chunk.size
-            console.log(chunk_test, '   test')
-            console.log(chunk_size_start, '   chunk size start')
-            console.log(chunk.size, '   chunk size ')
-            await this.uploadChunks(chunk, count, file, id)
             if(count === file.chunk_count){
+                await this.uploadCompleted(id);
+                this.removeItem(file)
                 break
             }
         }
-        console.log('loop Done! ==> remove file form list');
-        this.removeItem(file)
-    }            
-            
-    
+    }
 
-    
-    uploadChunks = async (chunk, count, file, id) => {
-        console.log('')
-        console.log('NEXT  CHUNK')
 
+
+    chunk_loop = async (chunk, file, id, count) => {
+        if(count === 1){
+            return await this.uploadFirstChunk(chunk, count, file, id)
+        }else{
+            return await this.uploadChunks(chunk, count, file, id)
+        }
+    }           
+    
+    
+    uploadFirstChunk = async (chunk, count, file, id) => {
         try {
-
             const form = new FormData()
             form.append('id', id)
             form.append('chunk', chunk)
@@ -218,36 +224,42 @@ export default class UploadView extends React.Component{
             form.append('origin_name', file.origin_name)
             form.append('extension', file.file_data.name.split('.').slice(-1)[0])
            
-            const response = await api.insertfile(form)
-          
-            const data = response.data;
-            if (data.isSuccess){
-                // resCounter = data.counter // file counter
-                this.setState({counter: this.state.counter + 1})
-                // chunk daten sind angekommen
-                if (this.state.counter === this.state.full_count) {
-                    await this.uploadCompleted(id);
-                }else{
-                    var percentage = (this.state.counter / this.state.full_count) * 100;
-                    this.setState({progress: percentage})
-                }
-
-            }else{
-                console.log('Error Occurred:', data.errorMessage)
-                return
-            }
-    
-
+            const response = await api.start_chunk_upload(form).then(res=>{
+                return res.data.isSuccess
+            })
+            return response
 
         }catch (error) {
             //debugger
             console.log('error', error)
+            return false
         }
     }
+
+    uploadChunks = async (chunk, count, file, id) => {
+        try {
+            const form = new FormData()
+            form.append('id', id)
+            form.append('chunk', chunk)
+            form.append('chunk_size', chunk.size)
+            form.append('counter', count)
+            form.append('filename', file.file_guid)
+           
+            const response = await api.insertfile(form).then(res=>{
+                return res.data.isSuccess
+            })
+            return response
+
+        }catch (error) {
+            //debugger
+            console.log('error', error)
+            return false
+        }
+    }
+
+
     
     uploadCompleted = async (id) => {
-        var form = new FormData();
-        form.append('filename', this.state.fileGuid);
         const response = await api.upload_detail(id)
         const data = response.data;
         if (data.isSuccess) {
@@ -256,20 +268,18 @@ export default class UploadView extends React.Component{
                 if (typeof window !== 'undefined') {
                     const path = window.location.protocol + '//' + window.location.host +'/'+  download_link; 
                     //console.log('show download link ', download_link)
-                    this.setState({use_link: path})
+                    this.setState({upload_success: true, link: path, isLink: true})
                 }
             }
             if(data.email){
                 const sended_mail =  data.email
                 console.log('show download email', sended_mail)
-                this.setState({use_email:sended_mail})
+                this.setState({upload_success: true, mailConfirm: sended_mail, isLink: false})
             }
-            console.log('')
-            console.log('finish upload')
-            console.log('')
+            // finish Upload
             //setTimeout(()=>this.resetUpload(), 2000)
             this.resetUpload()
-            this.setState({progress: 100, upload_success: true})
+            this.setState({upload_success: true})
         }
     }
     
@@ -305,8 +315,11 @@ export default class UploadView extends React.Component{
         })
         const allChunkCounts = countOfFiles.reduce((a, b) => a + b, 0)
         console.log(allChunkCounts, ' full counts')
-        this.file_loop(files, infos)
-        this.setState({openSendView: false, showProgress: true})
+        this.setState({openSendView: false, showProgress: true}, ()=>{
+            this.createMajor(files, infos)
+        })
+        
+        
     }
 
     
@@ -340,7 +353,6 @@ export default class UploadView extends React.Component{
                 </div>
             )
         }else{
-            console.log(this.state.openSendView)
             const show_text = files.length>0 ? upload_size : 'hinzufügen von Dateien'
             return(
                 <div className='div_input_upload'>
@@ -365,7 +377,6 @@ export default class UploadView extends React.Component{
                                 mobile={this.props.mobile} 
                                 newOpen={()=>this.setState({openSendView: true})}
                             />
-                    
                         </Modal>
                     </div>
                 </div>
@@ -377,8 +388,7 @@ export default class UploadView extends React.Component{
 
 
     render(){
-        console.log(CHUNK_SIZE)
-        const {showProgress, files, progress, full_count, use_email, use_link, upload_success, full_size} = this.state
+        const {showProgress, files, progress,  link, upload_success, mailConfirm, isLink} = this.state
             return (
                 
                 <div className='frame_input_upload'>
@@ -388,7 +398,7 @@ export default class UploadView extends React.Component{
                         <div>{!showProgress? null: <ProgressBar counter={progress} bgcolor={colors.accentColor}/>}</div>
                     }
                     {files.length>0 ? <div className='upload_list'><Itemlist items={files} removeItem={(e)=>this.removeItem(e)}/></div> : null}
-                    {use_link ? <div className='upload_finish'><FinishView link={use_link} return={()=>console.log('........wiederholung......')}/></div> : null}
+                    {upload_success ? <div className='upload_finish'><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} /></div> : null}
                     
                 </div>
             )
