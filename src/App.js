@@ -49,7 +49,7 @@ export default class App extends React.Component{
 
   createPing = async()=>{
     await api.create_ping().then(res=>{
-      if(res.data.isSuccess){
+      if(res.data.is === 'pong'){
         this.setState({backend: true})
       }
     })

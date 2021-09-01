@@ -94,7 +94,6 @@ export default class DownloadView extends React.Component{
 
   deleteBucket=async()=>{
     const {link} = this.state
-    console.log('delete api')
     await api.download_delete_detail(link).then(res=>{
       if(res){
         this.setState({showProgress: false, })

@@ -6,9 +6,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import { alertView } from '../alertViews';
-import api from './../api'
-import { colors } from '@material-ui/core';
+import {sendAlerts} from './../../alertViews';
+import api from './../../api'
+import {colors} from '@material-ui/core';
 
 
 const placeholder = ' schreibe eine Nachricht an den Empfänger...'
@@ -55,15 +55,14 @@ export class ViewText extends React.Component {
         
     }
 
-    handleMail = (event) => {
-        const used = event.target.value
-        const is_used = used == 'mail'? false : true
-        this.setState({send_option: used, useLink: is_used});
+    handleMail = () => {
+        const is_used = this.state.useLink? false : true
+        this.setState({ useLink: is_used});
     };
 
-    handleDownload = (event) => {
+    handleDownload = () => {
         //const used = event.target.value
-        const is_used = this.state.useDownload === true? false : true
+        const is_used = this.state.useDownload? false : true
         this.setState({useDownload: is_used});
     };
     
@@ -79,12 +78,13 @@ export class ViewText extends React.Component {
 
 
     radioSwitchMail = ()=>{
+        const valueR = this.state.useLink? 'link' : 'mail'
         return(
             <div className='send_view_change_zone_div'>
                 <div className='send_view_radio_div'>
                     <FormControl >
                         <FormLabel className='send_view_formlabel'>Übermittlungsart</FormLabel>
-                        <RadioGroup  value={this.state.send_option} onChange={this.handleMail}>
+                        <RadioGroup  value={valueR} onChange={this.handleMail}>
                             <FormControlLabel value="link" control={<Radio color="default"/>} label="Link" />
                             <FormControlLabel value="mail" control={<Radio color="default"/>} label="Link per mail" />
                         </RadioGroup>
@@ -96,29 +96,30 @@ export class ViewText extends React.Component {
     }
 
     useLinkOrMail = () => {
-        const { send_option } = this.state
-        switch(send_option){
-            case 'mail':
-                return (
-                    <div className='send_view_show_options'>
-                        <div className='send_view_div_input'>E-mail des Absenders:
-                            <input className='send_view_input' type='email' name='mail_user' value={this.state.mail_user} onChange={this.handleInput}></input>
-                        </div>
-                        <div className='send_view_div_input'>E-mail des Empfänger:
-                            <input className='send_view_input' type='email' name='mail_to' value={this.state.mail_to} onChange={this.handleInput}></input>
-                        </div>
-                        
+        const { useLink } = this.state
+        if(!useLink){
+            return (
+                <div className='send_view_show_options'>
+                    <div className='send_view_div_input'>E-mail des Absenders:
+                        <input className='send_view_input' type='email' name='mail_user' value={this.state.mail_user} onChange={this.handleInput}></input>
                     </div>
-                )
-            case 'link':
-                return (
-                    <div className='send_view_show_options'>
-                        <div className='send_view_div'>
-                            <div className='send_view_div_linktext'>Erhalte einen Link nach dem Upload</div>
-                        </div>
+                    <div className='send_view_div_input'>E-mail des Empfänger:
+                        <input className='send_view_input' type='email' name='mail_to' value={this.state.mail_to} onChange={this.handleInput}></input>
                     </div>
-                )
+                    
+                </div>
+            )
+        }else{
+            return (
+                <div className='send_view_show_options'>
+                    <div className='send_view_div'>
+                        <div className='send_view_div_linktext'>Erhalte einen Link nach dem Upload</div>
+                    </div>
+                </div>
+            )
         }
+                
+          
     }
 
     
@@ -142,7 +143,7 @@ export class ViewText extends React.Component {
                     <FormControl >
                     <FormLabel className='send_view_formlabel'>Download</FormLabel>
                     <FormControlLabel control={
-                        <Switch size="Normal" color='blue' checked={this.state.useDownload} onChange={this.handleDownload} />}
+                        <Switch size="medium" color='primary' checked={this.state.useDownload} onChange={this.handleDownload} />}
                         label="einmaliger Download"
                         />
                     </FormControl>
@@ -166,52 +167,42 @@ export class ViewText extends React.Component {
         
     }
 
+
+
+
+
+
+
+
+
     send_info = async()=>{
-        const { mail_to, mail_user, message, useDownload, send_option, useLink  } = this.state
-        const titel = 'E-mail exestiert nicht'
-        const cancelBoolean = false
-        const okBtnText = 'Ok'
-
-        
+        const { mail_to, mail_user, message, useDownload, useLink  } = this.state
         // sending option => use mail
-        if(send_option === 'mail'){
-
+        if(!useLink){
             // validate.... no input im E-mail field
             if(!mail_user || !mail_to){
-                this.props.close()
-                let text = 'Pflichtfelder sind nicht ausgefüllt !'
-                const new_title = 'keine Eingabe'
-                let answer =  await alertView(new_title, text, cancelBoolean,okBtnText, null) // alert View
+                let answer =  await sendAlerts('empty')
                 if(answer){
-                    this.props.newOpen()
                     return
                 }
             }
             // validate.... e-mail Absender
             const is_mail_user = await api.is_mail_detail(mail_user).then(res=>{return res.data.isSuccess})
             if(!is_mail_user){
-                this.props.close()
-                let text = 'bitte überprüfen deine    Absender    Adresse'
-                let answer =  await alertView(titel, text, cancelBoolean,okBtnText, null) // alert View
+                let answer =  await sendAlerts('mailuser')
                 if(answer){
-                    this.props.newOpen()
                     return
                 }
             }
             // validate.... e-mail Empfänger
             const is_mail_to = await api.is_mail_detail(mail_to).then(res=>{return res.data.isSuccess})
             if(!is_mail_to){
-                this.props.close()
-                let text = 'bitte überprüfen deine   Empfänger   Adresse'
-                let answer =  await alertView(titel, text, cancelBoolean,okBtnText, null) // alert View
+                let answer =  await sendAlerts('mailto')
                 if(answer){
-                    this.props.newOpen()
                     return
                 }
             }
         }
-
-        
         this.props.infos({ mail_user, mail_to, message, useDownload, useLink })
 
     }

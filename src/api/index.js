@@ -73,6 +73,7 @@ export const get_Item = form => api.get(`upload/`, form, configForm_)
 export const upload_detail = id => api.get(`upload/${id}`, configForm_)
 
 export const download_delete_detail = sender => api.delete(`remove/${sender}`, configForm_)
+export const remove_file_detail = (id, filename) => api.delete(`removefile/${id}/${filename}`, configForm_)
 export const is_mail_detail = mail => api.get(`mailvali/${mail}`, configForm_)
 
 export const download_stream = (downFileName,extensionName, config) => AxiosStream.download(downFileName, extensionName, config);
@@ -90,7 +91,8 @@ const apis = {
   is_mail_detail,
   insertfile,
   create_ping,
-  start_chunk_upload
+  start_chunk_upload,
+  remove_file_detail
 
     
 }

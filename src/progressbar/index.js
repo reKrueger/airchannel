@@ -49,6 +49,20 @@ const ProgressBar = (props) => {
       justifyContent: 'center',
       alignItems: 'center',
     }
+    const cancelStyles = {
+      color: 'white',
+      height: 'auto',
+      minWidth: '50px',
+      fontWeight: 'bold',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginLeft: '10px',
+      backgroundColor: "rgba(255, 255, 255, 0.512)",
+      borderRadius:'6px',
+      padding: '5px',
+      textShadow: '2px 2px 4px #000000',
+    }
  
 
 
@@ -60,6 +74,7 @@ const ProgressBar = (props) => {
             <span style={labelStyles}>{`${Math.floor(counter)} %`}</span>
           </div>
         </div>
+        <div style={cancelStyles} onClick={()=>props.cancel()}>abbruch</div>
       </div>
     );
   };

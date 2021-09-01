@@ -7,10 +7,10 @@ import api from './../api'
 import ProgressBar from './../progressbar'
 import Itemlist from './uploadFileList'
 import FinishView from './uploadFinishView'
-import SendView from './../sendView'
+import SendView from './sendView'
 import colors from './../colors'
 import { VscDiffAdded } from "react-icons/vsc";
-import { alertView } from '../alertViews';
+import { cancelUploadSwal, newUploadSwal } from './../alertViews';
 import Modal from 'react-modal';
 import roundFileSize from '../helpers/roundFileSze';
 
@@ -31,6 +31,7 @@ const customStyles = {
 
 
 
+
 const CHUNK_SIZE = 1048576 * 3;//its 3MB, increase the number measure in mb
 
 
@@ -40,12 +41,10 @@ export default class UploadView extends React.Component{
         super(props);
         this.state={ 
             files:[],
+            infos:{},
             showProgress: false,
-            counter: 0,
             full_count: 0,
             full_size: 0,
-            beginingOfTheChunk: 0,
-            endOfTheChunk: CHUNK_SIZE,
             progress: 0,
             openSendView: false,
             mailConfirm: '',
@@ -53,51 +52,29 @@ export default class UploadView extends React.Component{
             visible: false,
             link: '',
             isLink: null,
+            fileLoopBreak: false,
+            majorId: null
 
         }
         
     }
-
-    hide=()=> {
-        console.log('close')
-        this.setState({openSendView: false})
-        
-    }
   
-  
-    resetChunkProperties = () => {
-        this.setState({
-            showProgress: true,
-            progress: 0,
-            counter: 0,
-            beginingOfTheChunk: 0,
-            endOfTheChunk: CHUNK_SIZE
-        })
-    }
     
-
-
     resetUpload = () => {
         this.setState({
             showProgress: false,
             process: 0,
-            counter: 0,
-            beginingOfTheChunk: 0
+            upload_success: false,
         })
+    }
+
+    timeout=(ms)=> {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     
-    newFileUpload = async()=>{
-
-        // Alert POP UP
-        //
-        const titel = 'Neuer Upload?'
-        const text = 'sind Sie Sicher, Sie haben keine möglichkeit mehr an den Downloadlink zu kommen!'
-        const cancelBoolean = true
-        const okBtnText = 'Ja, ich habe den link kopiert'
-        const cancelBtnText = 'Nein, ich kopiere mir den link nochmal'
-
-        const answer =  await alertView(titel, text, cancelBoolean, okBtnText, cancelBtnText)
+    newUpload = async()=>{
+        const answer =  await newUploadSwal()
         if(answer){
             this.setState({
                 upload_success: false, 
@@ -105,12 +82,10 @@ export default class UploadView extends React.Component{
                 use_email: null
             })
         }
-        
     }
 
 
     getFileContext = (e) => {
-
         const files = []
         const file_arr = Array.from(e.target.files)
         var full_count = 0
@@ -129,74 +104,137 @@ export default class UploadView extends React.Component{
             full_count = full_count + _totalCount
             full_size = full_size + _file.size
             files.push(file_json)
-
-            
         })
-        
         this.setState({files: [...this.state.files, ...files], full_count: this.state.full_count + full_count, full_size})
         
     }
 
+    uploadCancel=async()=>{
+        const answer =  await cancelUploadSwal
+        if(answer){
+            this.setState({
+                fileLoopBreak: true, 
+            })
+        }
+        
+    }
 
+    uploadIsCancel = async(id, file)=>{
+        const filename = file.file_guid
+        await api.remove_file_detail(id, filename).then(res=>{
+            const is_remove = res.data.isSuccess
+            if(is_remove){
+                this.removeItem(file)
+                this.setState({majorId: id})
+                console.log('file gelöscht............!')
+                this.resetUpload()
+            }
+        })
+
+
+    }
+
+    newConnect = async(file, id, count , chunkCount )=>{
+        var connect = true
+        while (connect){
+            console.log('wiederhole verbindung')
+                try{
+                    const ping = await api.create_ping()
+                    if(ping){
+                        console.log(ping.data.is)
+                        console.log('**** CONNECT *****')
+                        connect = false
+                        await this.counterOfFile(file, id, count , chunkCount )
+
+                    }
+                }catch{
+                    if(!this.state.showProgress){
+                        connect = false
+                    }
+                    await this.timeout(3000);
+                }
+        }
+    }
+    
 
 
 
 
 
     createMajor = async (files, infos) => {
-        const form = new FormData()
-        form.append('mail_to', infos.mail_to)
-        form.append('mail_user', infos.mail_user)
-        form.append('message', infos.message)
-        form.append('use_download', infos.useDownload)
-        form.append('use_link', infos.useLink)
-        //
-        // create Major Model
-        //
-        //
-        //
-        const majorId = await api.create_major(form).then(res=>{
-            //console.log('res => ceate ', res)
-            if(res.data.isSuccess){
-                return res.data.id
-            }else{
-                return null
-            }
-        }) 
+        let majorId = this.state.majorId
+        if(!majorId){
+            const form = new FormData()
+            form.append('mail_to', infos.mail_to)
+            form.append('mail_user', infos.mail_user)
+            form.append('message', infos.message)
+            form.append('use_download', infos.useDownload)
+            form.append('use_link', infos.useLink)
+            //
+            // create Major Model
+            //
+            //
+            //
+            majorId = await api.create_major(form).then(res=>{
+                //console.log('res => ceate ', res)
+                if(res.data.isSuccess){
+                    return res.data.id
+                }else{
+                    return null
+                }   
+            }) 
+        }
+        
         // start loop of  all chunks
         if (majorId){
             for (const file of files) {
+                if(this.state.fileLoopBreak){
+                    break
+                }
                 // this file begins
                 await this.counterOfFile(file, majorId)
+                
                
             }
+            await this.uploadCompleted(majorId);
+            
         }
          
     }
 
+    
 
 
+    
 
-    counterOfFile = async(file, id) => {
-        var chunk_size_start = 0
+    counterOfFile = async(file, id, count=1, chunkCount=0) => {
+        var chunk_size_start = chunkCount
 
-        for (var count=1; ; count++ ) {
+        for (count; ; count++ ) {
+            if(this.state.fileLoopBreak){
+                await this.uploadIsCancel(id, file)
+                break
+            }
             var percentage = (count / file.chunk_count) * 100;
 
             const chunk = file.file_data.slice(chunk_size_start, CHUNK_SIZE + chunk_size_start);
             this.setState({progress: percentage})
+            //await this.timeout(3000); // local simulation
 
             const isUpload = await this.chunk_loop(chunk, file,id, count)
             if(!isUpload){
                 console.log('upload error')
+                await this.newConnect(file, id, count, chunk_size_start)
+                
                 break
+                
+                
             }
 
             chunk_size_start = chunk_size_start + chunk.size
             if(count === file.chunk_count){
-                await this.uploadCompleted(id);
                 this.removeItem(file)
-                break
+                return
             }
         }
     }
@@ -236,6 +274,8 @@ export default class UploadView extends React.Component{
         }
     }
 
+    
+
     uploadChunks = async (chunk, count, file, id) => {
         try {
             const form = new FormData()
@@ -244,12 +284,13 @@ export default class UploadView extends React.Component{
             form.append('chunk_size', chunk.size)
             form.append('counter', count)
             form.append('filename', file.file_guid)
+
            
-            const response = await api.insertfile(form).then(res=>{
+            const response =  await api.insertfile(form).then(res=>{
                 return res.data.isSuccess
             })
             return response
-
+            
         }catch (error) {
             //debugger
             console.log('error', error)
@@ -260,6 +301,10 @@ export default class UploadView extends React.Component{
 
     
     uploadCompleted = async (id) => {
+        if(this.state.fileLoopBreak){
+            this.setState({fileLoopBreak: false})
+            return
+        }
         const response = await api.upload_detail(id)
         const data = response.data;
         if (data.isSuccess) {
@@ -300,12 +345,11 @@ export default class UploadView extends React.Component{
                return file
            }
         })
-        this.setState({files: removed_list, full_size})
+        this.setState({files: removed_list, full_size, progress: 0})
 
     }
 
     send = (infos)=>{
-
         const {files} = this.state
         //console.log(infos, ' => infos')
         //console.log(files, ' => files')
@@ -315,7 +359,7 @@ export default class UploadView extends React.Component{
         })
         const allChunkCounts = countOfFiles.reduce((a, b) => a + b, 0)
         console.log(allChunkCounts, ' full counts')
-        this.setState({openSendView: false, showProgress: true}, ()=>{
+        this.setState({openSendView: false, showProgress: true, infos}, ()=>{
             this.createMajor(files, infos)
         })
         
@@ -345,7 +389,7 @@ export default class UploadView extends React.Component{
         const upload_size = 'gesamt '+ roundFileSize(full_size)
         if(upload_success){
             return(
-                <div className='div_input_upload' onClick={()=>this.newFileUpload()}>
+                <div className='div_input_upload' onClick={()=>this.newUpload()}>
                     <label className='label_input_upload'>
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
@@ -366,13 +410,13 @@ export default class UploadView extends React.Component{
                         <Modal
                             style={customStyles}
                             isOpen={this.state.openSendView} 
-                            onRequestClose={this.hide}
+                            onRequestClose={()=>this.setState({openSendView: false})}
                             ariaHideApp={false}
                 
                         >
                             <SendView 
                                 open={this.state.openSendView} 
-                                close={this.hide} 
+                                close={()=>this.setState({openSendView: false})} 
                                 infos={(infos)=>this.send(infos)} 
                                 mobile={this.props.mobile} 
                                 newOpen={()=>this.setState({openSendView: true})}
@@ -395,7 +439,7 @@ export default class UploadView extends React.Component{
                     {!showProgress?
                         this.bottomView(files)
                         :
-                        <div>{!showProgress? null: <ProgressBar counter={progress} bgcolor={colors.accentColor}/>}</div>
+                        <div>{!showProgress? null: <ProgressBar counter={progress}  cancel={()=>this.uploadCancel()} bgcolor={colors.accentColor}/>}</div>
                     }
                     {files.length>0 ? <div className='upload_list'><Itemlist items={files} removeItem={(e)=>this.removeItem(e)}/></div> : null}
                     {upload_success ? <div className='upload_finish'><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} /></div> : null}

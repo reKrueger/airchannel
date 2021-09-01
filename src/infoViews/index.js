@@ -30,3 +30,5 @@ export const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
       })
       return e
 }
+
+
