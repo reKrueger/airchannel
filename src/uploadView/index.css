@@ -110,8 +110,11 @@
     overflow-y: scroll;
     overflow-x: hidden;
     border-radius: 1vh;
-
-    
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .upload_list::-webkit-scrollbar {
+    display: none;
   }
 
   .upload_finish{

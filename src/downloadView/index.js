@@ -8,9 +8,8 @@ import colors from './../colors'
 import DownloadFileList from './downloadFileList'
 import DownloadMessageView from './downloadMessView'
 import { VscArrowDown, VscInfo, VscCheck } from "react-icons/vsc";
-import { infoView } from '../infoViews';
-import { renderToString } from 'react-dom/server'
-import roundFileSize from '../helpers/roundFileSze';
+import { downloadInfoView} from '../infoViews';
+
 
 
 
@@ -41,37 +40,13 @@ export default class DownloadView extends React.Component{
 
   }
 
-  htmlText = ()=>{
-    const { mail_to, mail_user, date, use_download, use_link } = this.state.majorInfo
-    let _size = 0
-    for (const file of this.state.files) {
-      _size = _size + file.file_size
-    };
-    const upload_size = 'gesamt '+ roundFileSize(_size)
-    const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric' };
-    const ds = new Date(date)
-    const is_mail = mail_user ? mail_user : 'keine Angabe'
-    const is_mail_to = mail_to === [''] ? mail_to : 'keine Angabe'
-    const is_use_download = use_download ? 'einmailger Download': 'upload wird nach 12 Std gelöscht'
-    const is_use_link = use_link ? 'upload-Link' : 'E-mail Benachrichtung'
-    return(
-      <div >
-          <div style={{fontWeight: '600',height: '1.5em'}}> Erstellt: <span style={{fontWeight: '300'}}> {ds.toLocaleDateString("de-DE", options)}</span></div>
-          <div style={{fontWeight: '600',height: '1.5em'}}> Dateigröße: <span style={{fontWeight: '300'}}> {upload_size}</span></div>
-          <div style={{fontWeight: '600',height: '1.5em'}}> Absender: <span style={{fontWeight: '300'}}> {is_mail}</span></div>
-          <div style={{fontWeight: '600',height: '1.5em'}}> Empfänger: <span style={{fontWeight: '300'}}> {is_mail_to}</span></div>
-          <div style={{fontWeight: '600',height: '1.5em'}}> Speicher Option: <span style={{fontWeight: '300'}}> {is_use_download}</span></div>
-          <div style={{fontWeight: '600',height: '1.5em'}}> Übermittlungsart: <span style={{fontWeight: '300'}}> {is_use_link}</span></div>
-      </div>
-    )
-  }
+  
 
   infoView = async()=>{
-    const title = 'Upload Infos'
-    const cancelBoolean = false
-    const okBtnText = 'Ok'
-    let htmlText = renderToString( this.htmlText())
-    let answer =  await infoView(title, htmlText, cancelBoolean,okBtnText, null) // alert View
+    const { mail_to, mail_user, date, use_download, use_link } = this.state.majorInfo
+    const {files} = this.state
+    const infos = {mail_to, mail_user, date, use_download, use_link, files }
+    let answer =  await downloadInfoView(infos) // alert View
     if(answer){
         return
         }
@@ -101,6 +76,8 @@ export default class DownloadView extends React.Component{
 
     })
   }
+
+  
 
   
 
@@ -223,7 +200,7 @@ export default class DownloadView extends React.Component{
       return (
         <div className='frame_input_upload' >
             <div className='div_input_upload'>
-              <div className='text_input_upload'>NO CONTENT</div>
+              <div className='text_input_upload_NO_CONTENT'>NO CONTENT</div>
             </div>
         </div>
       );

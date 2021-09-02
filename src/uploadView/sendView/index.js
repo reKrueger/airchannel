@@ -9,9 +9,9 @@ import FormLabel from '@material-ui/core/FormLabel';
 import {sendAlerts} from './../../alertViews';
 import api from './../../api'
 import {colors} from '@material-ui/core';
+import {USE_DOWNLOAD, USE_NOT_DOWNLOAD, PLACEHOLDER_TEXT} from './../../text'
 
 
-const placeholder = ' schreibe eine Nachricht an den Empfänger...'
 
 
 
@@ -157,11 +157,11 @@ export class ViewText extends React.Component {
         const { useDownload } = this.state
         if(useDownload){
             return (
-                <div className='sendview_info_text'> "Nach dem erstem Dowload werden alle Daten der Übertragung gelöscht, kein weiter Download mehr möglich. Automatisch wird dein Upload nach 7 Tagen gelöscht!"</div>
+                <div className='sendview_info_text'>{USE_DOWNLOAD}</div>
             )
         }else{
             return (
-                <div className='sendview_info_text'> "Dein Upload wird 12 Stunden gespeichert, er steht so oft und zur jeder Zeit zum Download bereit"</div>
+                <div className='sendview_info_text'>{USE_NOT_DOWNLOAD}</div>
             )
         }
         
@@ -224,7 +224,7 @@ export class ViewText extends React.Component {
                     <div className='send_view_change_zone'>{this.radioSwitchDownload()}</div>
                     <div className='send_view_change_zone'>{this.radioSwitchMail()}</div>
                     <div className='send_view_div'>
-                        <textarea className='send_view_message' placeholder={placeholder} rows={6} type='text' name='message' value={this.state.message} onChange={this.handleInput}></textarea>
+                        <textarea className='send_view_message' placeholder={PLACEHOLDER_TEXT} rows={6} type='text' name='message' value={this.state.message} onChange={this.handleInput}></textarea>
                     </div>
                     <div className='send_view_btn_div'>
                         <button className='send_btn' onClick={() => this.props.close()}>abbruch</button>

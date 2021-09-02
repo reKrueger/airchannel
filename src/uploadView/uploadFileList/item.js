@@ -8,20 +8,6 @@ import { VscFile, VscTrash } from "react-icons/vsc";
 
 export default class Item extends React.Component{
 
-    constructor(props){
-        super(props);
-        this.state={ 
-            filename: '',
-
-          
-  
-        }
-    }
-  
-  
-    componentDidMount(){
-    }
-  
   
   
     render(){
