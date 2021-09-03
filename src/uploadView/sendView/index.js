@@ -22,7 +22,7 @@ export class ViewText extends React.Component {
         super(props);
         this.state = {
             useLink: true,
-            useDownload: true,
+            useDownload: false,
             message: '',
             mail_user: '',
             mail_to: '',

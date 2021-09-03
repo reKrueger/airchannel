@@ -37,12 +37,7 @@ const _url = is_local? 'http://127.0.0.1:8000/transmit/' : hostUrl
 
 
 
-const configPing = {
-  headers: { 
-    'Content-Type': 'multipart/form-data;boundary=boundary',
-    'Accept': 'application/json;text/plain'
-  }
-}
+
 
 const configForm_ = {
   headers: { 
@@ -61,7 +56,7 @@ const api = axios.create({
 
 })
 
-export const create_ping = () => api.get(`ping/`, configPing)
+export const create_ping = () => api.get(`ping/`, configForm_)
 
 export const create_major = form => api.post(`major/`, form, configForm_)
 export const is_major_detail = sender => api.get(`major/${sender}`, configForm_)

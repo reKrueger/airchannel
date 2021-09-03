@@ -197,12 +197,6 @@
     resize: none;
 
 }
-.send_view_message::placeholder {
-    color: rgb(70, 94, 204);
-    font-size: 1em;
-    font-style: italic;
-
-  }
 
 
 .send_view_btn_div{
@@ -245,26 +239,31 @@
 
 
 textarea::-webkit-input-placeholder {
-    color: rgb(102, 102, 102);
-    font-size: small;
+    color: rgb(70, 94, 204);
+    font-size: 1em;
+    font-style: italic;
   }
   
   textarea:-moz-placeholder { /* Firefox 18- */
-    color: rgb(102, 102, 102);
-    font-size: small;  
+    color: rgb(70, 94, 204);
+    font-size: 1em;
+    font-style: italic; 
   }
   
   textarea::-moz-placeholder {  /* Firefox 19+ */
-    color: rgb(102, 102, 102);
-    font-size: small;  
+    color: rgb(70, 94, 204);
+    font-size: 1em;
+    font-style: italic; 
   }
   
   textarea:-ms-input-placeholder {
-    color: rgb(102, 102, 102);
-    font-size: small;  
+    color: rgb(70, 94, 204);
+    font-size: 1em;
+    font-style: italic; 
   }
   
   textarea::placeholder {
-    color: rgb(102, 102, 102);
-    font-size: small;  
+    color: rgb(70, 94, 204);
+    font-size: 1em;
+    font-style: italic; 
   }
