@@ -31,7 +31,7 @@ const customStyles = {
 
 
 
-
+const CHUNKCOUNT = []
 const CHUNK_SIZE = 1048576 * 3;//its 3MB, increase the number measure in mb
 
 
@@ -219,7 +219,7 @@ export default class UploadView extends React.Component{
 
             const chunk = file.file_data.slice(chunk_size_start, CHUNK_SIZE + chunk_size_start);
             this.setState({progress: percentage})
-            //await this.timeout(3000); // local simulation
+            //await this.timeout(1000); // local simulation
 
             const isUpload = await this.chunk_loop(chunk, file,id, count)
             if(!isUpload){
@@ -239,13 +239,64 @@ export default class UploadView extends React.Component{
         }
     }
 
-
+    
 
     chunk_loop = async (chunk, file, id, count) => {
+        
         if(count === 1){
             return await this.uploadFirstChunk(chunk, count, file, id)
         }else{
-            return await this.uploadChunks(chunk, count, file, id)
+            CHUNKCOUNT.push({count:count, chunk:chunk})
+            if(CHUNKCOUNT.length === 5 || count === file.chunk_count){
+                switch(CHUNKCOUNT.length){
+                   
+                    case 1:
+                        var res =  await this.uploadChunks(chunk, count, file, id)
+                        CHUNKCOUNT.length = 0
+                        return res
+                    case 3:
+                        var res =  await Promise.all([
+                            this.uploadChunks(CHUNKCOUNT[0].chunk, CHUNKCOUNT[0].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[1].chunk, CHUNKCOUNT[1].count, file, id)
+                        ])
+                        CHUNKCOUNT.length = 0
+                        return res
+                    case 3:
+                        var res =  await Promise.all([
+                            this.uploadChunks(CHUNKCOUNT[0].chunk, CHUNKCOUNT[0].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[1].chunk, CHUNKCOUNT[1].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[2].chunk, CHUNKCOUNT[2].count, file, id)
+                        ])
+                        CHUNKCOUNT.length = 0
+                        return res
+                    case 4:
+                        var res =  await Promise.all([
+                            this.uploadChunks(CHUNKCOUNT[0].chunk, CHUNKCOUNT[0].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[1].chunk, CHUNKCOUNT[1].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[2].chunk, CHUNKCOUNT[2].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[3].chunk, CHUNKCOUNT[3].count, file, id)
+                        ])
+                        CHUNKCOUNT.length = 0
+                    return res
+                    case 5:
+                        var res =  await Promise.all([
+                            this.uploadChunks(CHUNKCOUNT[0].chunk, CHUNKCOUNT[0].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[1].chunk, CHUNKCOUNT[1].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[2].chunk, CHUNKCOUNT[2].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[3].chunk, CHUNKCOUNT[3].count, file, id),
+                            this.uploadChunks(CHUNKCOUNT[4].chunk, CHUNKCOUNT[4].count, file, id)
+                        ])
+                        CHUNKCOUNT.length = 0
+                        return res
+                    default:
+                        return false
+
+                }
+                
+            }else{
+                return true
+            }
+            
         }
     }           
     
@@ -439,7 +490,7 @@ export default class UploadView extends React.Component{
                     {!showProgress?
                         this.bottomView(files)
                         :
-                        <div>{!showProgress? null: <ProgressBar counter={progress}  cancel={()=>this.uploadCancel()} bgcolor={colors.accentColor}/>}</div>
+                        <div>{!showProgress? null: <div className='progressbar_view' ><ProgressBar counter={progress} bgcolor={colors.accentColor}/><div className='progressbar_btn_div' ><button onClick={()=>this.uploadCancel()}  className='upload_cancel'>abbrechen</button></div></div>}</div>
                     }
                     {files.length>0 ? <div className='upload_list'><Itemlist items={files} removeItem={(e)=>this.removeItem(e)}/></div> : null}
                     {upload_success ? <div className='upload_finish'><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} /></div> : null}

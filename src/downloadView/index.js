@@ -190,7 +190,7 @@ export default class DownloadView extends React.Component{
       return (
         <div className='frame_input_upload' >
           {!showProgress?
-            this.changeDownloadView():<div>{!showProgress? null: <ProgressBar counter={counter} bgcolor={colors.accentColor}/>}</div>
+            this.changeDownloadView():<div>{!showProgress? null: <div className='progressbar_view' ><ProgressBar counter={counter} bgcolor={colors.accentColor}/></div>}</div>
           }
           {files.length>0 ? <div className='download_list_view'>{this.messageView()}<DownloadFileList items={files} /></div> : null}
           
