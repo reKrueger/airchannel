@@ -83,16 +83,17 @@
   .start_upload_btn{
     width: 100px;
     height: 50px;
-    border: 3px solid black;
+    border: 2px solid black;
     outline: none;
     background: rgba(187, 187, 187, 0.486);
-    border-radius: 5px;
+    border-radius: 2px;
     font-weight: bold;
     font-size: large;
 
   }
   .start_upload_btn{
     cursor: pointer;
+    background: rgba(236, 236, 236, 0.568);
 
   }
   
@@ -109,7 +110,7 @@
     left: 1vh;
     overflow-y: scroll;
     overflow-x: hidden;
-    border-radius: 1vh;
+    border-radius: 2px;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
@@ -127,7 +128,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     border: 1px solid rgba(0, 0, 0, 0.105);
-    border-radius: 1vh;
+    border-radius: 2px;
 
     
   }
@@ -137,35 +138,11 @@
   .progressbar_view{
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: auto;
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    
   }
 
-  .progressbar_btn_div{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
   
-
-  }
-  .upload_cancel{
-    width: 7em;
-    height: 4em;
-    margin-right: 50px;
-    outline: none;
-    border: none;
-    background: none;
-    color: white;
-    font-weight: 600;
-    font-size: 1em;
-    background: rgba(255, 255, 255, 0.512);
-    border-radius: 1em
-  }
-
-  .upload_cancel:hover{
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.712);
-    color: black;
-  }

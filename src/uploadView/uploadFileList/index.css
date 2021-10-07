@@ -42,7 +42,7 @@
     height: 9vh;
     width: 95%;
     background: rgba(0, 0, 0, 0.041);
-    border-radius: 1vh;
+    border-radius: 2px;
     margin-bottom: 0.5vh;
     display: flex;
     justify-content: space-between;
@@ -59,7 +59,7 @@
   }
 
 .item_icon_div{
-    width: auto;
+    width: 12%;
     margin-left: 0.6vh;
 }
 
@@ -73,15 +73,15 @@
     width: 70%;
     height: auto;
     word-wrap: break-word;
-    font-size: 1em;
+    font-size: auto;
 
 }
 
 .item_remove_div{
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.096);
-    border-radius: 50%;
+    background: none;
+    border-radius: 2px;
     display: flex;
     justify-content: center;
     align-items: center;

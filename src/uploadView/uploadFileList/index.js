@@ -31,10 +31,12 @@ export default class FileList extends React.Component{
     create_list=()=>{
         const lines = [] 
         this.props.items.forEach(item => {
+          
             lines.push(
               <Item 
                 item={item}
                 removeItem={(e)=>this.props.removeItem(e)}
+                load={this.props.load===item.file_guid? true: false}
 
                 />
               )

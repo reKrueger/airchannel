@@ -1,0 +1,29 @@
+
+
+.progressbar_btn_div{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  
+
+  }
+  .upload_cancel{
+    width: 7em;
+    height: 6vh;
+    margin-right: 50px;
+    outline: none;
+    border: 1px solid rgba(151, 151, 151, 0.812);
+    background: none;
+    color: rgb(63, 63, 63);
+    font-weight: 600;
+    font-size: 1em;
+    background: rgba(255, 255, 255, 0.512);
+    border-radius: 2px;
+  }
+
+  .upload_cancel:hover{
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.712);
+    color: black;
+    border: none
+  }

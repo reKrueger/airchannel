@@ -13,10 +13,10 @@ function MyImageComponent() {
     
     return <img src={src} />
 }
- 
+ //<MyImageComponent />
 export default function Appbackground() {
   return (
-    <Suspense fallback={<div style={{height: '100%', width:'100%', background:'rgba(187, 187, 187, 0.486)'}}></div>}>
+    <Suspense fallback={<div style={{height: '100%', width:'100%', background:'black'}}></div>}>
       <MyImageComponent />
     </Suspense>
   )

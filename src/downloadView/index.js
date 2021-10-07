@@ -105,6 +105,7 @@ export default class DownloadView extends React.Component{
     const configDownload = {
       responseType: 'arraybuffer',
       onDownloadProgress:(progressEvent)=> {
+        console.log(progressEvent.loaded, '  /  ', progressEvent.total)
         const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         this.setState({counter: percentage})
       },

@@ -68,7 +68,7 @@
     height: 5em;
     padding: 10px 10px;
     border: 1px solid blue;
-    border-radius: 1em;
+    border-radius: 2px;
     color: blue;
     word-wrap: break-word;
     background: rgba(0, 0, 255, 0.103);
