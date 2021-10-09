@@ -56,6 +56,9 @@ const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
 }
 
 
+
+
+
 export const  downloadInfoView = async(infos)=>{
   const title = 'Upload Infos'
   const cancelBoolean = false
@@ -65,7 +68,15 @@ export const  downloadInfoView = async(infos)=>{
   if(answer){
       return
       }
+}
 
-  
-
+export const  simpleInfoView = async(infos)=>{
+  const title = 'FUCK !'
+  const cancelBoolean = false
+  const okBtnText = 'Ok'
+  let htmlText = infos
+  let answer =  await infoView(title, htmlText, cancelBoolean,okBtnText, null) // alert View
+  if(answer){
+      return
+      }
 }

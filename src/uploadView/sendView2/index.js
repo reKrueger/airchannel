@@ -10,7 +10,7 @@ import {sendAlerts} from './../../alertViews';
 import api from './../../api'
 import {colors} from '@material-ui/core';
 import {USE_DOWNLOAD, USE_NOT_DOWNLOAD, PLACEHOLDER_TEXT} from './../../text'
-
+import { GoClock, GoCloudDownload } from "react-icons/go";
 
 
 
@@ -65,7 +65,6 @@ export class ViewText extends React.Component {
         const is_used = this.state.useDownload? false : true
         this.setState({useDownload: is_used});
     };
-
     
 
 
@@ -85,7 +84,7 @@ export class ViewText extends React.Component {
                 <div className='send_view_radio_div'>
                     <FormControl >
                         <FormLabel className='send_view_formlabel'>Übermittlungsart</FormLabel>
-                        <RadioGroup value={valueR} onChange={this.handleMail} >
+                        <RadioGroup  value={valueR} onChange={this.handleMail}>
                             <FormControlLabel value="link" control={<Radio color="default"/>} label="Link" />
                             <FormControlLabel value="mail" control={<Radio color="default"/>} label="Link per mail" />
                         </RadioGroup>
@@ -211,6 +210,44 @@ export class ViewText extends React.Component {
     hide() {
         this.setState({ visible: false });
     }
+
+    downloadSetting = ()=>{
+        const {useDownload} = this.state
+        const divClass_download = useDownload? 'send_view_square_div' : 'send_view_square_div_active'
+        const divClass = useDownload? 'send_view_square_div_active' : 'send_view_square_div'
+        const btnClass_download = useDownload? 'send_view_square_btn' : 'send_view_square_btn_active'
+        const btnClass = useDownload? 'send_view_square_btn_active' : 'send_view_square_btn'
+        const btnIcon_download = useDownload? USE_DOWNLOAD : <GoClock size={26} />
+        const btnIcon = useDownload?  <div className='iconDiv'><GoClock size={26}/><GoCloudDownload size={26}/></div>: USE_NOT_DOWNLOAD
+        return(
+            <div className='send_view_change_div'>
+                <div className={divClass}>
+                    <button className={btnClass} onClick={()=>this.setState({useDownload:false})}>{btnIcon}</button>
+                </div>
+                <div className={divClass_download}>
+                    <button className={btnClass_download} onClick={()=>this.setState({useDownload:true})}> {btnIcon_download}</button>
+                </div>
+            </div>
+        )
+    }
+
+    useMailBtn = ()=>{
+        if(this.state.useLink){
+            return(<button className='send_view_square_btn' onClick={()=>this.setState({useLink: false})}>Link ?</button>)
+        }else{
+            return(
+                <div className='send_view_use_mail'>
+                    <div className='send_view_div_input'>E-mail des Absenders:
+                        <input className='send_view_input' type='email' name='mail_user' value={this.state.mail_user} onChange={this.handleInput}></input>
+                    </div>
+                    <div className='send_view_div_input'>E-mail des Empfänger:
+                        <input className='send_view_input' type='email' name='mail_to' value={this.state.mail_to} onChange={this.handleInput}></input>
+                    </div>
+                    <button className='send_view_div_back' onClick={()=> this.setState({useLink: true})}>erhalte einen link</button>
+                </div>
+            )
+        }
+    }
     
 
     render() {
@@ -221,14 +258,22 @@ export class ViewText extends React.Component {
                     <div className='send_view_title_div'>
                         Datenübertragung
                     </div>
-                    <div className='send_view_change_zone'>{this.radioSwitchDownload()}</div>
-                    <div className='send_view_change_zone'>{this.radioSwitchMail()}</div>
-                    <div className='send_view_div'>
-                        <textarea className='send_view_message' placeholder={PLACEHOLDER_TEXT} rows={6} type='text' name='message' value={this.state.message} onChange={this.handleInput}></textarea>
+                    {this.downloadSetting()}
+                    <div className='send_view_change_mail_div'>
+                        <div className='send_view_mail_div'>
+                            {this.useMailBtn()}
+                        </div>
                     </div>
-                    <div className='send_view_btn_div'>
-                        <button className='send_btn' onClick={() => this.props.close()}>abbruch</button>
-                        <button className='send_btn' style={{color: colors.blue}} onClick={() => this.send_info()}>senden</button>
+                    <div className='send_view_message_div'>
+                        <textarea className='send_view_textarea' placeholder={PLACEHOLDER_TEXT} rows={6} type='text' name='message' value={this.state.message} onChange={this.handleInput}></textarea>
+                    </div>
+                    <div className='send_view_change_div'>
+                        <div className='send_view_send_div'>
+                            <button className='send_view_send_btn'>abbruch</button>
+                        </div>
+                        <div className='send_view_send_div'>
+                            <button className='send_view_send_btn_send'>senden</button>
+                        </div>
                     </div>
                 </div>
             </div>

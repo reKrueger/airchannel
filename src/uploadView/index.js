@@ -13,6 +13,7 @@ import CancelView from './cancelView';
 import colors from './../colors'
 import { VscDiffAdded } from "react-icons/vsc";
 import { cancelUploadSwal, newUploadSwal } from './../alertViews';
+import { simpleInfoView } from './../infoViews';
 import Modal from 'react-modal';
 import roundFileSize from '../helpers/roundFileSze';
 import axios from 'axios'
@@ -127,7 +128,7 @@ export default class UploadView extends React.Component{
 
     progressAction = (progressEvent, count, fullCount)=>{
         const chunk = ((progressEvent.loaded/1000000) / (progressEvent.total/1000000)) * 100
-        console.log('chunk ',count,': ',Math.floor(progressEvent.loaded/1000000),  ' => ',Math.floor(progressEvent.total/1000000))
+        //console.log('chunk ',count,': ',Math.floor(progressEvent.loaded/1000000),  ' => ',Math.floor(progressEvent.total/1000000))
         const add = (acc, a)=>{
             return acc + a
         }
@@ -196,7 +197,14 @@ export default class UploadView extends React.Component{
                 if(res.data.isSuccess){
                     return res.data.id
                 }else{
-                    return null
+                    if(res.data.clean){
+                        console.log('hier')
+                        const info = 'du hast gerade die gesamten Daten von Airchanel gelöscht !'
+                        simpleInfoView(info)
+                        this.resetUpload()
+                        
+                    }
+                    return false
                 }   
             }) 
         }
@@ -210,8 +218,8 @@ export default class UploadView extends React.Component{
                 this.setState({upload_begin: file.file_guid})
                 await this.upload_dispatcher(this.create_chunks(file), majorId)
             }
-        console.log('all finish')
-        this.uploadCompleted(majorId)
+            console.log('all finish')
+            this.uploadCompleted(majorId)
         }
     }
 
@@ -240,9 +248,10 @@ export default class UploadView extends React.Component{
         var i,j, countlist, chunk = UPLOAD_THREAD;
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
-            console.log(countlist)
+            //console.log(countlist)
             for(let i of countlist){
                 const count = parseInt(i) + 1
+                //console.log(count)
                 promises_1.push(await this.createFile(file, id, count))
             }
             const urlList = await Promise.all(promises_1)
@@ -292,6 +301,7 @@ export default class UploadView extends React.Component{
                     });           
         
         // append the file
+        console.log(count - 1)
         formData.append("file", chunks[count - 1]);
         // post the data on the s3 url
         const config = {
@@ -303,12 +313,17 @@ export default class UploadView extends React.Component{
         //console.log(presignedPostData.url)
         axiosRetry(axios, { retries: 8, retryCondition: (_error) => true});
         await axios.post(presignedPostData.url, formData, config).then(res=>{
-            console.log(' res ', count, ' : ', res)
+            //console.log(' res ', count, ' : ', res)
             
-            const isStorage = api.filed(filename,count).then(res=>{
-                console.log(count,' =>  ', res.data.isSuccess)
-            })
-        })         
+            
+        })   
+        this.fileSetStorage(filename, count)      
+    }
+
+    fileSetStorage = (filename, count)=>{
+        api.filed(filename,count).then(res=>{
+            console.log(count,' =>  ', res.data.isSuccess)
+        })
     }
 
     uploadCompleted = async (id) => {

@@ -13,11 +13,13 @@ const ProgressBar = (props) => {
     const containerStyles = {
       //position: 'absolute',
       height: '6vh',
-      width: '90%',
+      width: '100%',
       backgroundColor: "rgba(255, 255, 255, 0.512)",
       borderRadius: '0vh',
       overflow: 'hidden',
-      borderRadius: '2px'
+      borderRadius: '2px',
+      marginRight: '2em',
+      marginLeft: '2em'
       
     }
   
@@ -32,21 +34,21 @@ const ProgressBar = (props) => {
     }
   
     const labelStyles = {
-      position: 'absolute',
-      color: 'white',
+      color: 'black',
       height: '6vh',
-      width: 'auto',
-      left:'6%',
-      textShadow: `2px 2px ${colors.black}`,
+      width: '5em',
+      border: '1px solid rgba(151, 151, 151, 0.812)',
+      textShadow: `1px 1px ${colors.white}`,
       //paddingLeft:'3vw',
       fontSize: '150%',
       //minWidth: '50px',
       fontWeight: 'bold',
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
       alignItems: 'center',
-      //marginRight: '5px',
-      //backgroundColor: "rgba(255, 255, 255, 0.512)"
+      marginLeft: '30px',
+      backgroundColor: "rgba(255, 255, 255, 0.512)",
+      borderRadius: '2px',
     }
     
     const progressDiv = {
@@ -63,9 +65,9 @@ const ProgressBar = (props) => {
 
     return (
       <div style={progressDiv}>
+        <div style={labelStyles}>{`${Math.floor(counter)} %`}</div>
         <div style={containerStyles}>
           <div style={fillerStyles}>
-            <span style={labelStyles}>{`${Math.floor(counter)} %`}</span>
           </div>
         </div>
       </div>
