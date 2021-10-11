@@ -38,7 +38,7 @@ const ProgressBar = (props) => {
       height: '6vh',
       width: '5em',
       border: '1px solid rgba(151, 151, 151, 0.812)',
-      textShadow: `1px 1px ${colors.white}`,
+      textShadow: `1px 1px ${colors.grey}`,
       //paddingLeft:'3vw',
       fontSize: '150%',
       //minWidth: '50px',

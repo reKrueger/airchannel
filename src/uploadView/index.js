@@ -199,7 +199,7 @@ export default class UploadView extends React.Component{
                 }else{
                     if(res.data.clean){
                         console.log('hier')
-                        const info = 'du hast gerade die gesamten Daten von Airchanel gelöscht !'
+                        const info = 'du hast gerade die gesamten Daten von Airchannel gelöscht !'
                         simpleInfoView(info)
                         this.resetUpload()
                         
@@ -252,7 +252,7 @@ export default class UploadView extends React.Component{
             for(let i of countlist){
                 const count = parseInt(i) + 1
                 //console.log(count)
-                promises_1.push(await this.createFile(file, id, count))
+                promises_1.push(await this.createFile(file, id, count,file.chunks[i].size))
             }
             const urlList = await Promise.all(promises_1)
             promises_1.length = 0 
@@ -268,13 +268,14 @@ export default class UploadView extends React.Component{
     }
 
     
-    createFile = async(file, id, count) => {
+    createFile = async(file, id, count, chunkSize) => {
         try {
             const form = new FormData()
             form.append('id', id)
             form.append('chunks', count)
             form.append('filename', file.file_guid)
             form.append('file_size', file.file_size)
+            form.append('chunk_size', chunkSize)
             form.append('origin_name', file.origin_name)
             form.append('extension', file.file_data.name.split('.').slice(-1)[0])
             
