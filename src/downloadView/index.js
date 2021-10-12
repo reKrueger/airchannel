@@ -106,7 +106,7 @@ export default class DownloadView extends React.Component{
       for(let i=1; i<=chunks; i++){
         if(i%100==0 || i== chunks){
           console.log(start, ' : ', i )
-          promises.push(await this.downloadFiles(file, start, i))
+          promises.push( await this.downloadFiles(file, start, i))
           start = start + 100
 
         }
@@ -238,7 +238,7 @@ export default class DownloadView extends React.Component{
       return (
         <div className='frame_input_upload' >
           {!showProgress?
-            this.changeDownloadView():<div>{!showProgress? null: <div className='progressbar_view' ><ProgressBar counter={progress} bgcolor={colors.accentColor}/></div>}</div>
+            this.changeDownloadView():<div>{!showProgress? null: <div className='progressbar_view_download' ><ProgressBar counter={progress} bgcolor={colors.accentColor}/></div>}</div>
           }
           {files.length>0 ? <div className='download_list_view'>{this.messageView()}<DownloadFileList items={files} /></div> : null}
           

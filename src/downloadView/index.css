@@ -88,3 +88,12 @@
     font-weight: 600;
     font-size: 2em;
 }
+
+.progressbar_view_download{
+    position: absolute;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

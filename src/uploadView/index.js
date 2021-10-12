@@ -34,9 +34,10 @@ const SendViewStyles = {
 };
 
 
-const CHUNK_SIZE = 1048576 * 2// 1MB 
+const CHUNK_SIZE = 548576 //1048576 * 2// 1MB 
 const BUCKET_COUNT = 110
-const UPLOAD_THREAD = 120
+const UPLOAD_THREAD = 170
+const source = axios.CancelToken.source();
 
 export default class UploadView extends React.Component{
     constructor(props){
@@ -60,6 +61,7 @@ export default class UploadView extends React.Component{
             upload_begin: ''
 
         }
+        this.baseState = this.state 
         
     }
   
@@ -74,6 +76,15 @@ export default class UploadView extends React.Component{
 
     timeout=(ms)=> {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    cancelUpload = ()=>{
+        
+        if(this.state.fileLoopBreak){
+            console.log('this.cancelUpload')
+            source.cancel('post canceled.')
+            this.setState(this.baseState)
+        }
     }
 
     
@@ -127,8 +138,9 @@ export default class UploadView extends React.Component{
     }
 
     progressAction = (progressEvent, count, fullCount)=>{
-        const chunk = ((progressEvent.loaded/1000000) / (progressEvent.total/1000000)) * 100
-        //console.log('chunk ',count,': ',Math.floor(progressEvent.loaded/1000000),  ' => ',Math.floor(progressEvent.total/1000000))
+        this.cancelUpload()
+        const chunk = ((progressEvent.loaded/10000) / (progressEvent.total/10000)) * 100
+        console.log('chunk ',count,': ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))
         const add = (acc, a)=>{
             return acc + a
         }
@@ -212,9 +224,7 @@ export default class UploadView extends React.Component{
         // start loop of  all chunks
         if (majorId){
             for (const file of files) {
-                if(this.state.fileLoopBreak){
-                    break
-                }
+                this.cancelUpload()
                 this.setState({upload_begin: file.file_guid})
                 await this.upload_dispatcher(this.create_chunks(file), majorId)
             }
@@ -227,6 +237,7 @@ export default class UploadView extends React.Component{
     
 
     create_chunks= (file)=>{
+
         let chunk_start  = 0
         for(let i = 1; i<=file.chunk_count; i++){
             const chunk = file.file_data.slice(chunk_start, CHUNK_SIZE + chunk_start)
@@ -248,15 +259,18 @@ export default class UploadView extends React.Component{
         var i,j, countlist, chunk = UPLOAD_THREAD;
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
+            this.cancelUpload()
             //console.log(countlist)
             for(let i of countlist){
                 const count = parseInt(i) + 1
+                this.cancelUpload()
                 //console.log(count)
-                promises_1.push(await this.createFile(file, id, count,file.chunks[i].size))
+                promises_1.push(this.createFile(file, id, count,file.chunks[i].size))
             }
             const urlList = await Promise.all(promises_1)
             promises_1.length = 0 
             for(let e of urlList){
+                this.cancelUpload()
                 promises_2.push(this.uploadFileToS3(e, file.chunks, parseInt(e.bucket), file.file_guid, id))
             }
             await Promise.all(promises_2)
@@ -305,20 +319,34 @@ export default class UploadView extends React.Component{
         console.log(count - 1)
         formData.append("file", chunks[count - 1]);
         // post the data on the s3 url
+
         const config = {
             onUploadProgress: progressEvent => this.progressAction(progressEvent, count, chunks.length)  /*console.log('chunk', count,' ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))*/,
             headers: {
                 'Content-Type': "multipart/form-data",
-             }
+             },
+             cancelToken: source.token
+          
+
         }
         //console.log(presignedPostData.url)
+
         axiosRetry(axios, { retries: 8, retryCondition: (_error) => true});
-        await axios.post(presignedPostData.url, formData, config).then(res=>{
-            //console.log(' res ', count, ' : ', res)
+        await axios.post(presignedPostData.url, formData, config)
+        .then(res=>{
+            
+            console.log(' res ', count, ' : ', res)
+            //this.fileSetStorage(filename, count) 
             
             
-        })   
-        this.fileSetStorage(filename, count)      
+        }).catch(err=>{
+            if (axios.isCancel(err)) {
+                console.log(err.message);
+                formData.delete('file')
+              }
+            return 
+        })
+             
     }
 
     fileSetStorage = (filename, count)=>{
@@ -337,6 +365,7 @@ export default class UploadView extends React.Component{
         const data = response.data;
         if (data.isSuccess) {
             if(data.link){
+                
                 const download_link =  data.link
                 if (typeof window !== 'undefined') {
                     const path = window.location.protocol + '//' + window.location.host +'/'+  download_link; 
@@ -355,6 +384,7 @@ export default class UploadView extends React.Component{
             if(data.list){
                 console.log('... es wurde nicht alles gespeichert !!!!')
                 console.log(data.list)
+                //this.resetUpload()
             }
         }
     }
@@ -450,7 +480,7 @@ export default class UploadView extends React.Component{
                     <div>{!showProgress? null: 
                         <div className='progressbar_view'>
                             <ProgressBar counter={progress} bgcolor={colors.accentColor}/>
-                            <CancelView loopBreak={()=>this.setState({fileLoopBreak: true})} />
+                            <div className='cancel_place'><CancelView loopBreak={()=>this.setState({fileLoopBreak: true})} /></div>
                         </div>}
                     </div>
                 }
