@@ -34,9 +34,9 @@ const SendViewStyles = {
 };
 
 
-const CHUNK_SIZE = 548576 //1048576 * 2// 1MB 
+const CHUNK_SIZE = 1048576 * 1// 1 
 const BUCKET_COUNT = 110
-const UPLOAD_THREAD = 170
+const UPLOAD_THREAD = 40
 const source = axios.CancelToken.source();
 
 export default class UploadView extends React.Component{
@@ -57,7 +57,8 @@ export default class UploadView extends React.Component{
             isLink: null,
             fileLoopBreak: false,
             majorId: null,
-            loaded: new Map(),
+            loaded: 0,
+            total: 0,
             upload_begin: ''
 
         }
@@ -137,17 +138,22 @@ export default class UploadView extends React.Component{
         }
     }
 
-    progressAction = (progressEvent, count, fullCount)=>{
-        this.cancelUpload()
-        const chunk = ((progressEvent.loaded/10000) / (progressEvent.total/10000)) * 100
-        console.log('chunk ',count,': ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))
-        const add = (acc, a)=>{
-            return acc + a
+    
+    progressAction = (progressEvent,count, fileSize)=>{
+        const {loaded, total} = this.state
+        if(progressEvent.loaded === progressEvent.total){
+          this.setState({loaded: loaded + progressEvent.loaded, total: total + progressEvent.total })
         }
-        const u = Array.from(this.state.loaded.values()).reduce(add, 0)
-        this.state.loaded.set(count , chunk)
-        this.setState({progress: u / fullCount})
-    }
+        console.log(Math.floor(progressEvent.loaded/100000), '  /  ', Math.floor(progressEvent.total/100000))
+        const progress =  (loaded + progressEvent.loaded) /  fileSize  * 100 
+        this.setState({progress: progress})
+        /*
+        if(count%10==0){
+            this.setState({progress: progress})
+        }
+        */
+        
+      }
 
     // ********************
     // *******FIIE*********
@@ -248,34 +254,47 @@ export default class UploadView extends React.Component{
         return file
     }
 
+
+
+    countListLoop=(countlist, file,id)=>{
+        const promises = []
+        for(let i of countlist){
+            const count = parseInt(i) + 1
+            this.cancelUpload()
+            promises.push(this.createFile(file, id, count, file.chunks[i].size))
+        }
+        return promises
+    }
+    s3UrlLoop=async(countlist, file, id)=>{
+        const promises = []
+        for(let e of countlist){
+            const count = parseInt(e) + 1
+            console.log(count)
+            const u = await this.createFile(file, id, count, file.chunks[e].size)
+            this.cancelUpload()
+            promises.push(this.uploadFileToS3(u, file.chunks, parseInt(u.bucket), file.file_guid, file.file_size))
+        }
+        return promises
+    }
     
     
     upload_dispatcher = async(file, id)=>{
-        console.log(file)
-        const promises_1 = []
-        const promises_2 = []
         const countArr = [...range(1, file.chunk_count)]
-        console.log(countArr)
+        //console.log(countArr)
         var i,j, countlist, chunk = UPLOAD_THREAD;
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
             this.cancelUpload()
-            //console.log(countlist)
-            for(let i of countlist){
-                const count = parseInt(i) + 1
-                this.cancelUpload()
-                //console.log(count)
-                promises_1.push(this.createFile(file, id, count,file.chunks[i].size))
-            }
-            const urlList = await Promise.all(promises_1)
-            promises_1.length = 0 
-            for(let e of urlList){
-                this.cancelUpload()
-                promises_2.push(this.uploadFileToS3(e, file.chunks, parseInt(e.bucket), file.file_guid, id))
-            }
-            await Promise.all(promises_2)
-            promises_2.length = 0
+            
+            
+            console.log('los url')
+            //const urlList =  await Promise.all(this.countListLoop(countlist, file, id))
+            console.log('...url  fetig')
+            await Promise.all(await this.s3UrlLoop(countlist, file, id))
+            
+            
         }
+        
         console.log('finish')
         this.removeItem(file)
            
@@ -307,7 +326,7 @@ export default class UploadView extends React.Component{
   
 
 
-    uploadFileToS3 = async(presignedPostData, chunks, count, filename, id) => {
+    uploadFileToS3 = async(presignedPostData, chunks, count, filename, fileSize) => {
         // create a form obj
         const formData = new FormData();
         // append the fields in presignedPostData in formData         
@@ -316,12 +335,12 @@ export default class UploadView extends React.Component{
                     });           
         
         // append the file
-        console.log(count - 1)
+        //console.log(count - 1)
         formData.append("file", chunks[count - 1]);
         // post the data on the s3 url
 
         const config = {
-            onUploadProgress: progressEvent => this.progressAction(progressEvent, count, chunks.length)  /*console.log('chunk', count,' ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))*/,
+            onUploadProgress: progressEvent => this.progressAction(progressEvent, count, fileSize )  /*console.log('chunk', count,' ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))*/,
             headers: {
                 'Content-Type': "multipart/form-data",
              },
@@ -333,19 +352,15 @@ export default class UploadView extends React.Component{
 
         axiosRetry(axios, { retries: 8, retryCondition: (_error) => true});
         await axios.post(presignedPostData.url, formData, config)
-        .then(res=>{
-            
-            console.log(' res ', count, ' : ', res)
-            //this.fileSetStorage(filename, count) 
-            
-            
-        }).catch(err=>{
+        .catch(err=>{
             if (axios.isCancel(err)) {
                 console.log(err.message);
                 formData.delete('file')
               }
             return 
         })
+        //console.log('____________')
+        this.fileSetStorage(filename, count)
              
     }
 
