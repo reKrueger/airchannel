@@ -71,7 +71,7 @@ export default class DownloadView extends React.Component{
       if(res.data.isSuccess){
         const data = res.data
         this.setState({isContent: true, files: data.fileList, message: data.message, majorInfo: data.majorInfo})
-        //console.log(res.data)
+        console.log(res.data)
       }
     })
   }
@@ -88,7 +88,6 @@ export default class DownloadView extends React.Component{
     })
   }
 
-  
 
   
 
@@ -111,6 +110,8 @@ export default class DownloadView extends React.Component{
 
         }
       }
+      const folderPath = file.folder.join('/')
+      const filePath = folderPath +'/'+file.origin_name
       const resBuffers = await Promise.all(promises)
       saveAs(new Blob([...resBuffers], {
         type: 'application/octet-stream'
@@ -179,7 +180,7 @@ export default class DownloadView extends React.Component{
            console.log('gefunden !!!!')
        }
     })
-    this.setState({files: removed_list})
+    this.setState({files: removed_list, progress: 0, loaded:0, total:0})
 
   }
 

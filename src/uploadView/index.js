@@ -11,7 +11,7 @@ import SendView from './sendView'
 import range from '../helpers/getRange';
 import CancelView from './cancelView';
 import colors from './../colors'
-import { VscDiffAdded } from "react-icons/vsc";
+import { VscDiffAdded, VscFolder, VscFolderActive } from "react-icons/vsc";
 import { cancelUploadSwal, newUploadSwal } from './../alertViews';
 import { simpleInfoView } from './../infoViews';
 import Modal from 'react-modal';
@@ -59,7 +59,9 @@ export default class UploadView extends React.Component{
             majorId: null,
             loaded: 0,
             total: 0,
-            upload_begin: ''
+            upload_begin: '',
+            inputFolder: false,
+            eventArr :[],
 
         }
         this.baseState = this.state 
@@ -80,7 +82,6 @@ export default class UploadView extends React.Component{
     }
 
     cancelUpload = ()=>{
-        
         if(this.state.fileLoopBreak){
             console.log('this.cancelUpload')
             source.cancel('post canceled.')
@@ -104,7 +105,7 @@ export default class UploadView extends React.Component{
 
     }
 
-    newConnect = async(file, id, count , chunkCount )=>{
+    newConnect = async(file, id, count, chunkCount )=>{
         var connect = true
         while (connect){
             console.log('wiederhole verbindung')
@@ -139,14 +140,33 @@ export default class UploadView extends React.Component{
     }
 
     
-    progressAction = (progressEvent,count, fileSize)=>{
-        const {loaded, total} = this.state
+    progressAction = (progressEvent,count, fullCount , fileSize)=>{
+        const loadedFromCHunk = (progressEvent.loaded / progressEvent.total) * 100
+        //const totalFromFile = (progressEvent.total / fileSize) * 100
+        //const isCHunkFromProgress = (totalFromFile / loadedFromCHunk) * 100
+        const {loaded, total, eventArr} = this.state
+        console.log('')
+        console.log(count)
+        eventArr[count - 1] = loadedFromCHunk
+        /*
         if(progressEvent.loaded === progressEvent.total){
           this.setState({loaded: loaded + progressEvent.loaded, total: total + progressEvent.total })
         }
-        console.log(Math.floor(progressEvent.loaded/100000), '  /  ', Math.floor(progressEvent.total/100000))
-        const progress =  (loaded + progressEvent.loaded) /  fileSize  * 100 
-        this.setState({progress: progress})
+        */
+        //console.log('from loaded ', loadedFromCHunk)
+        //console.log('from chunk total ', totalFromFile)
+        //console.log('from file ', isCHunkFromProgress)
+        
+        var sum = eventArr.reduce(function(a, b){
+            return a + b;
+        }, 0);
+        
+        //console.log(Math.floor(progressEvent.loaded/100000), '  /  ', Math.floor(progressEvent.total/100000))
+        //const progress =  (loaded + progressEvent.loaded) /  fileSize  * 100 
+        const progress = sum / eventArr.length
+        //console.log(eventArr)
+        //console.log(sum)
+        this.setState({progress: progress, eventArr: eventArr})
         /*
         if(count%10==0){
             this.setState({progress: progress})
@@ -173,6 +193,38 @@ export default class UploadView extends React.Component{
                 origin_name: _file.name,
                 file_guid: _fileID,
                 file_data: _file,
+                folder_name:[],
+                chunks: []
+            }
+            full_count = full_count + _totalCount
+            full_size = full_size + _file.size
+            files.push(file_json)
+        })
+        this.setState({files: [...this.state.files, ...files], full_count: this.state.full_count + full_count, full_size})
+        
+    }
+
+    // ********************
+    // *******FOLDER*********
+    // ********************
+    getFileContextFolder = (e) => {
+        const files = []
+        const file_arr = Array.from(e.target.files)
+        var full_count = 0
+        var full_size = this.state.full_size
+        file_arr.forEach(file=>{
+            const _file = file;
+            const _totalCount =  Math.ceil(file.size / CHUNK_SIZE) // counts of cjunks
+            const _fileID = uuidv4() 
+            const _folderName = file.webkitRelativePath.split("/")
+            const popped = _folderName.pop()
+            const file_json = {
+                chunk_count: _totalCount,
+                file_size: _file.size,
+                origin_name: _file.name,
+                file_guid: _fileID,
+                file_data: _file,
+                folder_name: _folderName,
                 chunks: []
             }
             full_count = full_count + _totalCount
@@ -233,6 +285,7 @@ export default class UploadView extends React.Component{
                 this.cancelUpload()
                 this.setState({upload_begin: file.file_guid})
                 await this.upload_dispatcher(this.create_chunks(file), majorId)
+                this.setState({process:0,loaded:0, total:0, eventArr:[]})
             }
             console.log('all finish')
             this.uploadCompleted(majorId)
@@ -243,7 +296,6 @@ export default class UploadView extends React.Component{
     
 
     create_chunks= (file)=>{
-
         let chunk_start  = 0
         for(let i = 1; i<=file.chunk_count; i++){
             const chunk = file.file_data.slice(chunk_start, CHUNK_SIZE + chunk_start)
@@ -265,6 +317,7 @@ export default class UploadView extends React.Component{
         }
         return promises
     }
+
     s3UrlLoop=async(countlist, file, id)=>{
         const promises = []
         for(let e of countlist){
@@ -285,11 +338,6 @@ export default class UploadView extends React.Component{
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
             this.cancelUpload()
-            
-            
-            console.log('los url')
-            //const urlList =  await Promise.all(this.countListLoop(countlist, file, id))
-            console.log('...url  fetig')
             await Promise.all(await this.s3UrlLoop(countlist, file, id))
             
             
@@ -311,6 +359,9 @@ export default class UploadView extends React.Component{
             form.append('chunk_size', chunkSize)
             form.append('origin_name', file.origin_name)
             form.append('extension', file.file_data.name.split('.').slice(-1)[0])
+            if(file.folder_name){
+                form.append('folder', JSON.stringify(file.folder_name))
+            }
             
             return await api.create_file(form).then(res=>{
                 const presignedPostData = res.data.s3
@@ -340,7 +391,7 @@ export default class UploadView extends React.Component{
         // post the data on the s3 url
 
         const config = {
-            onUploadProgress: progressEvent => this.progressAction(progressEvent, count, fileSize )  /*console.log('chunk', count,' ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))*/,
+            onUploadProgress: progressEvent => this.progressAction(progressEvent, count, chunks.length, fileSize )  /*console.log('chunk', count,' ',Math.floor(progressEvent.loaded/100000),  ' => ',Math.floor(progressEvent.total/100000))*/,
             headers: {
                 'Content-Type': "multipart/form-data",
              },
@@ -424,6 +475,24 @@ export default class UploadView extends React.Component{
         this.setState({files: removed_list, full_size, progress: 0})
     }
 
+    // removed item from list 
+    // .file_guid = uuid name from upload file
+    // stste new list 
+    removeFolder = (foldername)=>{
+        const fileList = this.state.files
+        var full_size = 0
+        const removed_list = fileList.filter(file=>{ 
+            
+            if(file.folder_name[0] !== foldername){
+                full_size = full_size + file.file_size
+                return file
+           }
+        })
+        
+        
+        this.setState({files: removed_list, full_size, progress: 0})
+    }
+
     
 
     // if file in Upload list
@@ -439,7 +508,7 @@ export default class UploadView extends React.Component{
     
 
     bottomView = (files)=>{
-        const {full_size, upload_success} = this.state
+        const {full_size, upload_success, inputFolder} = this.state
         const upload_size = 'gesamt '+ roundFileSize(full_size)
         if(upload_success){
             return(
@@ -455,11 +524,12 @@ export default class UploadView extends React.Component{
             return(
                 <div className='div_input_upload'>
                     <label className='label_input_upload'>
-                        <input  className='input_upload'   type='file' multiple onChange={this.getFileContext} />
+                        {inputFolder? <input  className='input_upload' type='file' multiple onChange={this.getFileContextFolder}  directory="" webkitdirectory="" msdirectory="" odirectory=""/> : <input  className='input_upload' type='file' multiple onChange={this.getFileContext}/> }
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
-                    <div className='text_input_upload_size'>{show_text}</div>
+                    <div className='text_input_upload_size'  >{show_text}</div>
                     {files.length>0 ? this.readyToSend() : null}
+                    <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>
                     <div className='rodal_div' >
                         <Modal
                             style={SendViewStyles}
@@ -499,7 +569,7 @@ export default class UploadView extends React.Component{
                         </div>}
                     </div>
                 }
-                {files.length>0 ? <div className='upload_list'><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)}/></div> : null}
+                {files.length>0 ? <div className='upload_list'><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
                 {upload_success ? <div className='upload_finish'><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} /></div> : null}    
             </div>
         )

@@ -21,6 +21,18 @@
 
 }
 
+.list_item_folder{
+    width: 100%;
+    margin-top: 2.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+
+
+}
+
 
 
 
@@ -56,7 +68,34 @@
 }
 .item_frame::-webkit-scrollbar {
     display: none;
-  }
+}
+
+.folder_frame_div{
+    height: 9vh;
+    width: 95%;
+    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
+    border-radius: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+
+
+}
+
+.item_frame{
+    height: 9vh;
+    width: 95%;
+    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
+    border-radius: 2px;
+    margin-bottom: 0.5vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+
+
+}
 
 .item_icon_div{
     width: 12%;
@@ -101,3 +140,5 @@
     cursor: pointer;
 
 }
+
+
