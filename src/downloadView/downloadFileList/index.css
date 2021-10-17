@@ -22,7 +22,7 @@
     width: 95%;
     background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
     border-radius: 2px;
-    margin-bottom: 0.5vh;
+    margin: 2px auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -44,9 +44,20 @@
 
 .download_item_name_div{
     width: 85%;
-    height: auto;
-    word-wrap: break-word;
+    height: 90%;
+    -ms-word-break: break-all;
+    word-break: break-all;
+
+    /* Non standard for WebKit */
+    word-break: break-word;
+
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
     font-size: 1em;
+    margin-right: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
 }
 

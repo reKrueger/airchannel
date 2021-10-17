@@ -1,13 +1,13 @@
 
   
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import './index.css'
 import api from './../api'
 import ProgressBar from './../progressbar'
 import Itemlist from './uploadFileList'
 import FinishView from './uploadFinishView'
 import SendView from './sendView'
+import fileContext from './fileHandle/fileContext'
 import range from '../helpers/getRange';
 import CancelView from './cancelView';
 import colors from './../colors'
@@ -18,6 +18,7 @@ import Modal from 'react-modal';
 import roundFileSize from '../helpers/roundFileSze';
 import axios from 'axios'
 import axiosRetry from 'axios-retry';
+import { file } from 'jszip';
 
 const SendViewStyles = {
     content: {
@@ -34,8 +35,7 @@ const SendViewStyles = {
 };
 
 
-const CHUNK_SIZE = 1048576 * 1// 1 
-const BUCKET_COUNT = 110
+const CHUNK_SIZE = 1048576 * 1 // 1 MB 
 const UPLOAD_THREAD = 40
 const source = axios.CancelToken.source();
 
@@ -44,12 +44,12 @@ export default class UploadView extends React.Component{
         super(props);
         this.state={ 
             files:[],
+            filesSize:0,
             infos:{},
             showProgress: false,
-            full_count: 0,
-            full_size: 0,
             progress: 0,
             openSendView: false,
+
             mailConfirm: '',
             upload_success: false,
             visible: false,
@@ -57,8 +57,6 @@ export default class UploadView extends React.Component{
             isLink: null,
             fileLoopBreak: false,
             majorId: null,
-            loaded: 0,
-            total: 0,
             upload_begin: '',
             inputFolder: false,
             eventArr :[],
@@ -87,6 +85,12 @@ export default class UploadView extends React.Component{
             source.cancel('post canceled.')
             this.setState(this.baseState)
         }
+    }
+
+    inputHandle=(input)=>{
+        const context = fileContext(input)
+        const {files, filesSize} = this.state
+        this.setState({files: files.concat([...context.files]), filesSize: filesSize + context.size})
     }
 
     
@@ -142,98 +146,19 @@ export default class UploadView extends React.Component{
     
     progressAction = (progressEvent,count, fullCount , fileSize)=>{
         const loadedFromCHunk = (progressEvent.loaded / progressEvent.total) * 100
-        //const totalFromFile = (progressEvent.total / fileSize) * 100
-        //const isCHunkFromProgress = (totalFromFile / loadedFromCHunk) * 100
-        const {loaded, total, eventArr} = this.state
-        console.log('')
-        console.log(count)
+        const {eventArr} = this.state
         eventArr[count - 1] = loadedFromCHunk
-        /*
-        if(progressEvent.loaded === progressEvent.total){
-          this.setState({loaded: loaded + progressEvent.loaded, total: total + progressEvent.total })
-        }
-        */
-        //console.log('from loaded ', loadedFromCHunk)
-        //console.log('from chunk total ', totalFromFile)
-        //console.log('from file ', isCHunkFromProgress)
-        
         var sum = eventArr.reduce(function(a, b){
             return a + b;
         }, 0);
         
-        //console.log(Math.floor(progressEvent.loaded/100000), '  /  ', Math.floor(progressEvent.total/100000))
-        //const progress =  (loaded + progressEvent.loaded) /  fileSize  * 100 
-        const progress = sum / eventArr.length
-        //console.log(eventArr)
-        //console.log(sum)
+        const progress = sum / fullCount
         this.setState({progress: progress, eventArr: eventArr})
-        /*
-        if(count%10==0){
-            this.setState({progress: progress})
-        }
-        */
+        
         
       }
 
-    // ********************
-    // *******FIIE*********
-    // ********************
-    getFileContext = (e) => {
-        const files = []
-        const file_arr = Array.from(e.target.files)
-        var full_count = 0
-        var full_size = this.state.full_size
-        file_arr.forEach(file=>{
-            const _file = file;
-            const _totalCount =  Math.ceil(file.size / CHUNK_SIZE) // counts of cjunks
-            const _fileID = uuidv4() 
-            const file_json = {
-                chunk_count: _totalCount,
-                file_size: _file.size,
-                origin_name: _file.name,
-                file_guid: _fileID,
-                file_data: _file,
-                folder_name:[],
-                chunks: []
-            }
-            full_count = full_count + _totalCount
-            full_size = full_size + _file.size
-            files.push(file_json)
-        })
-        this.setState({files: [...this.state.files, ...files], full_count: this.state.full_count + full_count, full_size})
-        
-    }
-
-    // ********************
-    // *******FOLDER*********
-    // ********************
-    getFileContextFolder = (e) => {
-        const files = []
-        const file_arr = Array.from(e.target.files)
-        var full_count = 0
-        var full_size = this.state.full_size
-        file_arr.forEach(file=>{
-            const _file = file;
-            const _totalCount =  Math.ceil(file.size / CHUNK_SIZE) // counts of cjunks
-            const _fileID = uuidv4() 
-            const _folderName = file.webkitRelativePath.split("/")
-            const popped = _folderName.pop()
-            const file_json = {
-                chunk_count: _totalCount,
-                file_size: _file.size,
-                origin_name: _file.name,
-                file_guid: _fileID,
-                file_data: _file,
-                folder_name: _folderName,
-                chunks: []
-            }
-            full_count = full_count + _totalCount
-            full_size = full_size + _file.size
-            files.push(file_json)
-        })
-        this.setState({files: [...this.state.files, ...files], full_count: this.state.full_count + full_count, full_size})
-        
-    }
+   
 
 
     // ACTION
@@ -259,9 +184,6 @@ export default class UploadView extends React.Component{
             form.append('use_link', infos.useLink)
             //
             // create Major Model
-            //
-            //
-            //
             majorId = await api.create_major(form).then(res=>{
                 //console.log('res => ceate ', res)
                 if(res.data.isSuccess){
@@ -299,7 +221,6 @@ export default class UploadView extends React.Component{
         let chunk_start  = 0
         for(let i = 1; i<=file.chunk_count; i++){
             const chunk = file.file_data.slice(chunk_start, CHUNK_SIZE + chunk_start)
-            //console.log(max_chunk_size,'........ ',chunk.size)
             file.chunks.push(chunk)
             chunk_start = chunk_start + chunk.size
         }
@@ -333,17 +254,12 @@ export default class UploadView extends React.Component{
     
     upload_dispatcher = async(file, id)=>{
         const countArr = [...range(1, file.chunk_count)]
-        //console.log(countArr)
         var i,j, countlist, chunk = UPLOAD_THREAD;
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
             this.cancelUpload()
             await Promise.all(await this.s3UrlLoop(countlist, file, id))
-            
-            
         }
-        
-        console.log('finish')
         this.removeItem(file)
            
     }
@@ -506,10 +422,11 @@ export default class UploadView extends React.Component{
     }
 
     
+    
 
-    bottomView = (files)=>{
-        const {full_size, upload_success, inputFolder} = this.state
-        const upload_size = 'gesamt '+ roundFileSize(full_size)
+    bottomView = ()=>{
+        const {upload_success, inputFolder, files,filesSize} = this.state
+        const upload_size = 'gesamt '+ roundFileSize(filesSize)
         if(upload_success){
             return(
                 <div className='div_input_upload' onClick={()=>this.newUpload()}>
@@ -524,7 +441,7 @@ export default class UploadView extends React.Component{
             return(
                 <div className='div_input_upload'>
                     <label className='label_input_upload'>
-                        {inputFolder? <input  className='input_upload' type='file' multiple onChange={this.getFileContextFolder}  directory="" webkitdirectory="" msdirectory="" odirectory=""/> : <input  className='input_upload' type='file' multiple onChange={this.getFileContext}/> }
+                        {inputFolder? <input  className='input_upload' type='file' multiple onChange={this.inputHandle}  directory="" webkitdirectory="" msdirectory="" odirectory=""/> : <input  className='input_upload' type='file' multiple onChange={this.inputHandle}/> }
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
                     <div className='text_input_upload_size'  >{show_text}</div>
@@ -554,13 +471,15 @@ export default class UploadView extends React.Component{
 
     
 
+    
+
 
     render(){
         const {showProgress, files, progress, upload_begin, link, upload_success, mailConfirm, isLink} = this.state
         return (
             <div className='frame_input_upload'>
                 {!showProgress?
-                    this.bottomView(files)
+                    this.bottomView()
                     :
                     <div>{!showProgress? null: 
                         <div className='progressbar_view'>

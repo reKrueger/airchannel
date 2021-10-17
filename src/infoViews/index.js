@@ -1,7 +1,9 @@
 import Swal from 'sweetalert2'
+import './index.css'
 import colors from './../colors'
 import { renderToString } from 'react-dom/server'
 import roundFileSize from '../helpers/roundFileSze';
+import color from './../colors';
 
 
 const htmlLayout = (infos)=>{
@@ -29,6 +31,11 @@ const htmlLayout = (infos)=>{
   )
 }
 
+const test = {
+  backgroundColor: 'yellow',
+  color: 'black'
+  
+}
 
 //background: rgba(187, 187, 187, 0.886);
 const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
@@ -41,10 +48,10 @@ const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
         html: text,
         icon: 'info',
         showCancelButton: cancelBtn,
-        cancelButtonColor: colors.red,
-        confirmButtonColor: colors.highBlue,
+        cancelButtonColor: colors.black,
+        confirmButtonColor: colors.black,
         confirmButtonText: okBtnText,
-        cancelButtonText: cancelBtnText
+        cancelButtonText: cancelBtnText,
       }).then((result) => {
         if (result.isConfirmed) {
             return true
