@@ -17,8 +17,8 @@ const alertView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
         text: text,
         icon: 'warning',
         showCancelButton: cancelBtn,
-        cancelButtonColor: colors.red,
-        confirmButtonColor: colors.highBlue,
+        cancelButtonColor: colors.black,
+        confirmButtonColor: colors.black,
         confirmButtonText: okBtnText,
         cancelButtonText: cancelBtnText
       }).then((result) => {

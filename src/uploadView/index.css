@@ -86,6 +86,10 @@
     justify-content: center;
     align-items: center;
   }
+
+  .change_input_div:hover{
+    cursor: pointer;
+  }
   
 
   .ready_to_send_div{

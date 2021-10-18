@@ -301,8 +301,6 @@ export default class UploadView extends React.Component{
                       formData.append(key, presignedPostData.fields[key]);
                     });           
         
-        // append the file
-        //console.log(count - 1)
         formData.append("file", chunks[count - 1]);
         // post the data on the s3 url
 
@@ -425,6 +423,7 @@ export default class UploadView extends React.Component{
     
 
     bottomView = ()=>{
+        const {mobile} = this.props
         const {upload_success, inputFolder, files,filesSize} = this.state
         const upload_size = 'gesamt '+ roundFileSize(filesSize)
         if(upload_success){
@@ -446,7 +445,7 @@ export default class UploadView extends React.Component{
                     </label>
                     <div className='text_input_upload_size'  >{show_text}</div>
                     {files.length>0 ? this.readyToSend() : null}
-                    <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>
+                    {mobile? null: <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>}
                     <div className='rodal_div' >
                         <Modal
                             style={SendViewStyles}

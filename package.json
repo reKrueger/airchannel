@@ -20,6 +20,7 @@
     "jszip": "^3.7.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-dropdown": "^1.9.2",
     "react-icons": "^4.2.0",
     "react-image": "^4.0.3",
     "react-modal": "^3.14.3",

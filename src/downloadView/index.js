@@ -78,11 +78,28 @@ export default class DownloadView extends React.Component{
 
 
 
-  deleteBucket=async()=>{
-    const {link} = this.state
+  removeItem = (item)=>{
+    const fileList = this.state.files
+    const {link, majorInfo} = this.state
+    if(majorInfo.use_download){
+      this.deleteBucket(link)
+    }
+    const removed_list = fileList.filter(file=>{ 
+        if(file.filename != item.filename){
+           return file
+       }else{
+           console.log('gefunden !!!!')
+       }
+    })
+    this.setState({files: removed_list, progress: 0, loaded:0, total:0, showProgress: false})
+  }
+
+  deleteBucket=async(link)=>{
     await api.download_delete_detail(link).then(res=>{
-      if(res){
-        this.setState({showProgress: false, })
+      if(res.data.isSuccess){
+        console.log(' delete bucket is success ')
+      }else{
+        console.log('delete bucket fail')
       }
 
     })
@@ -146,24 +163,7 @@ export default class DownloadView extends React.Component{
       
     }
     return await axios(configDownload)
-        .then(res => {
-          /** 
-          const blob = new Blob([res.data], {
-            type: 'application/octet-stream'
-          })
-          */
-          return res.data
-            //let extension = 'zip';
-            //let tempFileName = `${this.state['selectedCommunity']}`
-            //let fileName = `${tempFileName}.${extension}`;
-            /*
-            const blob = new Blob([res.data], {
-              ((type: 'application/octet-stream'
-            })
-
-            saveAs(blob, fileName)
-            */
-        })
+        .then(res => {return res.data})
         .catch(error => {
             console.log(error.message);
         });
@@ -171,18 +171,7 @@ export default class DownloadView extends React.Component{
     
   }
 
-  removeItem = (item)=>{
-    const fileList = this.state.files
-    const removed_list = fileList.filter(file=>{ 
-        if(file.filename != item.filename){
-           return file
-       }else{
-           console.log('gefunden !!!!')
-       }
-    })
-    this.setState({files: removed_list, progress: 0, loaded:0, total:0})
-
-  }
+  
 
   messageView = ()=>{
     const {message} = this.state
