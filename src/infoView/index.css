@@ -1,0 +1,26 @@
+
+.helpView{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+    color: whitesmoke;
+    font-size: 2em;
+}
+
+.backToAirChannel_div{
+    position: absolute;
+    display: flex;
+    top: 22px;
+    left: 22px;
+    border-bottom: 1px solid whitesmoke;
+    width: auto;
+    height: auto;
+    font-size: 0.8em;
+}
+
+.backToAirChannel_div:hover{
+    cursor: pointer;
+}

@@ -2,31 +2,21 @@ import React from 'react';
 import './index.css';
 import { VscThreeBars } from "react-icons/vsc";
 import colors from './../colors'
-import { DropdownView} from './dropdownView';
 import Dropdown from 'react-dropdown';
 //import 'react-dropdown/style.css';
-
+import { withRouter } from "react-router-dom";
 
 const options = [
-    { value: 'one', label: 'One' },
-    { value: 'two', label: 'Two', className: 'myOptionClassName' },
-    {
-     type: 'group', name: 'group1', items: [
-       { value: 'three', label: 'Three', className: 'myOptionClassName' },
-       { value: 'four', label: 'Four' }
-     ]
-    },
-    {
-     type: 'group', name: 'group2', items: [
-       { value: 'five', label: 'Five' },
-       { value: 'six', label: 'Six' }
-     ]
-    }
+    { value: '/info', label: 'Info' },
+    { value: '/help', label: 'Hilfe' },
+    { value: '/api', label: 'API' },
+    { value: '/speedtest', label: 'Speedtest' },
+    { value: '/imprint', label: 'Impressum' },
+    
   ];
 
-const defaultOption = null;
 
-export default class DropdownMenu extends React.Component{
+class DropdownMenu extends React.Component{
 
     constructor(props){
         super(props);
@@ -45,7 +35,7 @@ export default class DropdownMenu extends React.Component{
     
 
     onSelect=(e)=>{
-        console.log(e)
+        this.props.history.push(e.value)
     }
     
       
@@ -63,7 +53,7 @@ export default class DropdownMenu extends React.Component{
                 options={options} 
                 onChange={this.onSelect} 
                 value=''
-                placeholder=' '
+                placeholder=''
                 placeholderClassName='test' 
                 placeHolderValue= {false} />
             </div>
@@ -75,3 +65,4 @@ export default class DropdownMenu extends React.Component{
   
   
   }
+  export default withRouter(DropdownMenu);
