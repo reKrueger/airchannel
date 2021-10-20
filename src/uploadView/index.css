@@ -1,22 +1,13 @@
 .rodal_div_{
   position: relative;
-  bottom: 12vh;
-  height: 88vh;
+  height: 100vh;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
   background: transparent;
-  border-radius: 30px;
 }
-.rodal_class{
-  height: 730px;
-  width: 400px;
-  width:48% !important; 
-  top:20%;
 
-
-}
 
 
 .frame_input_upload{
@@ -85,10 +76,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid transparent;
   }
 
   .change_input_div:hover{
     cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.123);
+    border-radius: 2px;
   }
   
 

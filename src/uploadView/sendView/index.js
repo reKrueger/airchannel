@@ -5,14 +5,21 @@ import Switch from '@material-ui/core/Switch';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import {sendAlerts} from './../../alertViews';
 import api from './../../api'
-import {colors} from '@material-ui/core';
+import {colors, styled} from '@material-ui/core';
 import {USE_DOWNLOAD, USE_NOT_DOWNLOAD, PLACEHOLDER_TEXT} from './../../text'
 
 
-
+const BlackSwitch = styled(Switch)(({ theme }) => ({
+    '& .MuiSwitch-switchBase.Mui-checked': {
+      color: 'black',
+      
+    },
+    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+      backgroundColor: 'black',
+    },
+  }));
 
 
 
@@ -84,7 +91,7 @@ export class ViewText extends React.Component {
             <div className='send_view_change_zone_div'>
                 <div className='send_view_radio_div'>
                     <FormControl >
-                        <FormLabel className='send_view_formlabel'>Übermittlungsart</FormLabel>
+                        <div className='send_view_formlabel' color='default'>Übermittlungsart</div>
                         <RadioGroup value={valueR} onChange={this.handleMail} >
                             <FormControlLabel value="link" control={<Radio color="default"/>} label="Link" />
                             <FormControlLabel value="mail" control={<Radio color="default"/>} label="Link per mail" />
@@ -141,9 +148,9 @@ export class ViewText extends React.Component {
             <div className='send_view_change_zone_div'>
                 <div className='send_view_radio_div'>
                     <FormControl >
-                    <FormLabel className='send_view_formlabel'>Download</FormLabel>
+                    <div className='send_view_formlabel' >Download</div>
                     <FormControlLabel control={
-                        <Switch size="medium" color='primary' checked={this.state.useDownload} onChange={this.handleDownload} />}
+                        <BlackSwitch size="medium" color='secondary' checked={this.state.useDownload} onChange={this.handleDownload} />}
                         label="einmaliger Download"
                         />
                     </FormControl>
@@ -176,7 +183,7 @@ export class ViewText extends React.Component {
 
 
     send_info = async()=>{
-        const { mail_to, mail_user, message, useDownload, useLink  } = this.state
+        const { mail_to, mail_user, message, useDownload, useLink} = this.state
         // sending option => use mail
         if(!useLink){
             // validate.... no input im E-mail field

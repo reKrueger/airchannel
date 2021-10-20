@@ -18,18 +18,17 @@ import Modal from 'react-modal';
 import roundFileSize from '../helpers/roundFileSze';
 import axios from 'axios'
 import axiosRetry from 'axios-retry';
-import { file } from 'jszip';
 
 const SendViewStyles = {
     content: {
-      top: '50%',
-      left: '50%',
+      top: '0px',
+      left: '0px',
       right: 'auto',
       bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      border: `1px solid ${colors.black}`,
-      borderRadius: '2px',
+      //marginRight: '-50%',
+      //transform: 'translate(-50%, -50%)',
+      //border: `1px solid ${colors.black}`,
+      //borderRadius: '2px',
       background: 'rgba(236, 236, 236, 0.668)'
     },overlay: { background: 'rgba(64, 64, 64, 0.668)' } // blur background
 };
@@ -408,7 +407,6 @@ export default class UploadView extends React.Component{
     }
 
     
-
     // if file in Upload list
     // show button to open send menu
     readyToSend = ()=>{
@@ -444,8 +442,8 @@ export default class UploadView extends React.Component{
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
                     <div className='text_input_upload_size'  >{show_text}</div>
-                    {files.length>0 ? this.readyToSend() : null}
                     {mobile? null: <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>}
+                    {files.length>0 ? this.readyToSend() : null}
                     <div className='rodal_div' >
                         <Modal
                             style={SendViewStyles}

@@ -25,9 +25,6 @@ class SpeedtestView extends React.Component{
     }
 
 
-
-  
-  
     render(){
       return (
         <div className='helpView'>
@@ -37,8 +34,5 @@ class SpeedtestView extends React.Component{
       )
     }
       
-    
-  
-  
   }
   export default withRouter(SpeedtestView);
