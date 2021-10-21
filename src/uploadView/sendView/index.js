@@ -34,11 +34,16 @@ export class ViewText extends React.Component {
             mail_user: '',
             mail_to: '',
             send_option:'link',
-            visible: true
+            visible: true,
+            mobileHeight: ''
 
         }
         this.wrapper = React.createRef();
 
+    }
+    componentDidMount(){
+        const vh = window.innerHeight ;
+        this.setState({mobileHeight: `${vh}px`})
     }
 
     componentDidUpdate(prevProps) {
@@ -221,9 +226,8 @@ export class ViewText extends React.Component {
     
 
     render() {
-        
         return (
-            <div className={this.props.mobile?'send_view_dialog_mobile':'send_view_dialog'}>
+            <div className={this.props.mobile?'send_view_modal_mobile':'send_view_modal'} style={this.props.mobile?{height:this.state.mobileHeight}:null}>
                 <div className={this.props.mobile?'send_view_frame_mobile':'send_view_frame'}>
                     <div className='send_view_title_div'>
                         Datenübertragung

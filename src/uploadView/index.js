@@ -21,16 +21,18 @@ import axiosRetry from 'axios-retry';
 
 const SendViewStyles = {
     content: {
-      top: '0px',
-      left: '0px',
-      right: 'auto',
-      bottom: 'auto',
-      //marginRight: '-50%',
-      //transform: 'translate(-50%, -50%)',
-      //border: `1px solid ${colors.black}`,
-      //borderRadius: '2px',
-      background: 'rgba(236, 236, 236, 0.668)'
-    },overlay: { background: 'rgba(64, 64, 64, 0.668)' } // blur background
+        width: '420px',
+        height: '100vh',
+        top: '0%',
+        left: '0%',
+        right: 'auto',
+        bottom: 'auto',
+        //marginRight: '-50%',
+        //transform: 'translate(-50%, -50%)',
+        border: `none`,
+        //borderRadius: '2px',
+        background: 'nome',
+        },overlay: { background: 'rgba(64, 64, 64, 0.568)',width: '100vw', } // blur background
 };
 
 
@@ -417,6 +419,17 @@ export default class UploadView extends React.Component{
         )
     }
 
+
+    /**
+     * 
+     * <Modal
+                            style={SendViewStyles}
+                            isOpen={this.state.openSendView} 
+                            onRequestClose={()=>this.setState({openSendView: false})}
+                            ariaHideApp={false}
+                
+                        >
+     */
     
     
 
@@ -444,7 +457,7 @@ export default class UploadView extends React.Component{
                     <div className='text_input_upload_size'  >{show_text}</div>
                     {mobile? null: <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>}
                     {files.length>0 ? this.readyToSend() : null}
-                    <div className='rodal_div' >
+                    <div className='rodal_div_' >
                         <Modal
                             style={SendViewStyles}
                             isOpen={this.state.openSendView} 
@@ -452,14 +465,16 @@ export default class UploadView extends React.Component{
                             ariaHideApp={false}
                 
                         >
-                            <SendView 
-                                open={this.state.openSendView} 
-                                close={()=>this.setState({openSendView: false})} 
-                                infos={(infos)=>this.send(infos)} 
-                                mobile={this.props.mobile} 
-                                newOpen={()=>this.setState({openSendView: true})}
-                            />
-                        </Modal>
+                                <SendView 
+                                    open={this.state.openSendView} 
+                                    close={()=>this.setState({openSendView: false})} 
+                                    infos={(infos)=>this.send(infos)} 
+                                    mobile={this.props.mobile} 
+                                    newOpen={()=>this.setState({openSendView: true})}
+                                />
+                                </Modal>
+                            
+                        
                     </div>
                 </div>
             )
