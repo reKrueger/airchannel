@@ -27,9 +27,11 @@ export default class Item extends React.Component{
                 <div className='item_name_div'>
                     <div className='item_name'>{item.origin_name}</div>
                 </div>
-                <div className='item_remove_div'>
-                    <button className='item_remove' onClick={()=>this.props.removeItem(item)}>x</button>
-                </div>
+                {is_load?null:
+                    <div className='item_remove_div'>
+                        <button className='item_remove' onClick={()=>this.props.removeItem(item)}>x</button>
+                    </div>
+                }
             </div>
         )
     }

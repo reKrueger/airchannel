@@ -11,7 +11,7 @@ import fileContext from './fileHandle/fileContext'
 import range from '../helpers/getRange';
 import CancelView from './cancelView';
 import colors from './../colors'
-import { VscDiffAdded, VscFolder, VscFolderActive } from "react-icons/vsc";
+import { VscDiffAdded, VscFolder, VscFolderActive, VscArrowUp } from "react-icons/vsc";
 import { cancelUploadSwal, newUploadSwal } from './../alertViews';
 import { simpleInfoView } from './../infoViews';
 import Modal from 'react-modal';
@@ -50,7 +50,6 @@ export default class UploadView extends React.Component{
             showProgress: false,
             progress: 0,
             openSendView: false,
-
             mailConfirm: '',
             upload_success: false,
             visible: false,
@@ -84,7 +83,8 @@ export default class UploadView extends React.Component{
         if(this.state.fileLoopBreak){
             console.log('this.cancelUpload')
             source.cancel('post canceled.')
-            this.setState(this.baseState)
+            
+            
         }
     }
 
@@ -148,11 +148,12 @@ export default class UploadView extends React.Component{
     progressAction = (progressEvent,count, fullCount , fileSize)=>{
         const loadedFromCHunk = (progressEvent.loaded / progressEvent.total) * 100
         const {eventArr} = this.state
+        //console.log(eventArr)
         eventArr[count - 1] = loadedFromCHunk
         var sum = eventArr.reduce(function(a, b){
             return a + b;
         }, 0);
-        
+        this.cancelUpload()
         const progress = sum / fullCount
         this.setState({progress: progress, eventArr: eventArr})
         
@@ -194,7 +195,7 @@ export default class UploadView extends React.Component{
                         console.log('hier')
                         const info = 'du hast gerade die gesamten Daten von Airchannel gelöscht !'
                         simpleInfoView(info)
-                        this.resetUpload()
+                        this.setState(this.baseState)
                         
                     }
                     return false
@@ -244,10 +245,9 @@ export default class UploadView extends React.Component{
         const promises = []
         for(let e of countlist){
             const count = parseInt(e) + 1
-            console.log(count)
             const u = await this.createFile(file, id, count, file.chunks[e].size)
             this.cancelUpload()
-            promises.push(this.uploadFileToS3(u, file.chunks, parseInt(u.bucket), file.file_guid, file.file_size))
+            promises.push(this.uploadFileToS3(u, file.chunks, count, file.file_guid, file.file_size))
         }
         return promises
     }
@@ -259,6 +259,9 @@ export default class UploadView extends React.Component{
         for (i = 0,j = countArr.length; i < j; i += chunk) {
             countlist =countArr.slice(i, i + chunk);
             this.cancelUpload()
+            if(this.state.fileLoopBreak){
+                return
+            }
             await Promise.all(await this.s3UrlLoop(countlist, file, id))
         }
         this.removeItem(file)
@@ -267,6 +270,9 @@ export default class UploadView extends React.Component{
 
     
     createFile = async(file, id, count, chunkSize) => {
+        if(this.state.fileLoopBreak){
+            return
+        }
         try {
             const form = new FormData()
             form.append('id', id)
@@ -279,6 +285,7 @@ export default class UploadView extends React.Component{
             if(file.folder_name){
                 form.append('folder', JSON.stringify(file.folder_name))
             }
+            
             
             return await api.create_file(form).then(res=>{
                 const presignedPostData = res.data.s3
@@ -296,6 +303,9 @@ export default class UploadView extends React.Component{
 
     uploadFileToS3 = async(presignedPostData, chunks, count, filename, fileSize) => {
         // create a form obj
+        if(this.state.fileLoopBreak){
+            return
+        }
         const formData = new FormData();
         // append the fields in presignedPostData in formData         
         Object.keys(presignedPostData.fields).forEach(key => {
@@ -317,7 +327,7 @@ export default class UploadView extends React.Component{
         //console.log(presignedPostData.url)
 
         axiosRetry(axios, { retries: 8, retryCondition: (_error) => true});
-        await axios.post(presignedPostData.url, formData, config)
+        await axios.post(presignedPostData.url, formData, config).then(()=>this.fileSetStorage(filename, count))
         .catch(err=>{
             if (axios.isCancel(err)) {
                 console.log(err.message);
@@ -326,7 +336,7 @@ export default class UploadView extends React.Component{
             return 
         })
         //console.log('____________')
-        this.fileSetStorage(filename, count)
+        
              
     }
 
@@ -336,10 +346,12 @@ export default class UploadView extends React.Component{
         })
     }
 
+
+
+
     uploadCompleted = async (id) => {
-        
         if(this.state.fileLoopBreak){
-            this.setState({fileLoopBreak: false})
+            this.setState(this.baseState)
             return
         }
         const response = await api.upload_detail(id)
@@ -379,15 +391,13 @@ export default class UploadView extends React.Component{
     // .file_guid = uuid name from upload file
     // stste new list 
     removeItem = (uploadFile)=>{
-        let full_size = this.state.full_size
-        full_size = full_size - uploadFile.file_size
         const fileList = this.state.files
         const removed_list = fileList.filter(file=>{ 
             if(file.file_guid != uploadFile.file_guid){
                return file
            }
         })
-        this.setState({files: removed_list, full_size, progress: 0})
+        this.setState({files: removed_list,  progress: 0})
     }
 
     // removed item from list 
@@ -414,7 +424,7 @@ export default class UploadView extends React.Component{
     readyToSend = ()=>{
         return(
             <div className='ready_to_send_div'> 
-                <button className='start_upload_btn' hidden={this.state.openSendView} onClick={()=>this.setState({openSendView: true})}>senden</button>
+                <button className='upload_icon_btn' hidden={this.state.openSendView} onClick={()=>this.setState({openSendView: true})}><VscArrowUp size={35} color='black'/></button>
             </div>
         )
     }
@@ -455,7 +465,7 @@ export default class UploadView extends React.Component{
                         <VscDiffAdded size={50} color={colors.black}/>
                     </label>
                     <div className='text_input_upload_size'  >{show_text}</div>
-                    {mobile? null: <div className='change_input_div' onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>}
+                    {mobile? null: <div className='change_input_div' style={inputFolder? {background: 'rgba(0, 0, 0, 0.123)'}:null} onClick={()=>this.setState({inputFolder: inputFolder? false:true})}>{inputFolder? <VscFolderActive size={30}/>:<VscFolder size={30}/>}</div>}
                     {files.length>0 ? this.readyToSend() : null}
                     <div className='rodal_div_' >
                         <Modal

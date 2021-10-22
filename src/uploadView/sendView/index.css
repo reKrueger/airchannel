@@ -225,13 +225,13 @@
     margin-left: 4px;
 
     outline: none;
-    background: rgba(187, 187, 187, 0.486);
-    color: rgb(68, 68, 68);
+    background: rgb(255, 255, 255);
+    color: black;
     font-size: 1.1em;
     font-weight: 300;
     border: none;
     vertical-align: bottom;
-    border: 1px solid rgba(82, 82, 82, 0.753);
+    border: 1px solid transparent;
     border-radius: 2px;
 
 
@@ -240,11 +240,10 @@
 
 .send_btn:hover{
     cursor: pointer;
-    color: black;
-    background: rgba(245, 245, 245, 0.353);
-    border: 1px solid rgba(82, 82, 82, 0.253);
+    background: rgba(255, 255, 255, 0.801);
+    border: 1px solid rgba(110, 110, 110, 0.952);
+    color: rgb(107, 107, 107);
     
-
 }
 
 

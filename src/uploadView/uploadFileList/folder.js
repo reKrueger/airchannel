@@ -31,9 +31,11 @@ export default class Folder extends React.Component{
                 <div className='item_name_div'>
                     <div className='item_name'>{foldername}</div>
                 </div>
-                <div className='item_remove_div'>
-                    <button className='item_remove' onClick={()=>this.props.removeItem(foldername)}><VscTrash size ={18}/></button>
-                </div>
+                {is_load? null:
+                    <div className='item_remove_div'>
+                        <button className='item_remove' onClick={()=>this.props.removeItem(foldername)}>x</button>
+                    </div>
+                }
             </div>
         )
     }

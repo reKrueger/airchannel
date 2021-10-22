@@ -211,7 +211,7 @@ export default class DownloadView extends React.Component{
         </div>
         :
         <div className='div_input_upload'>
-          <div className='download_icon_div' ><VscCheck size={35} color={colors.black}/></div>
+          <div className='download_icon_div' ><VscCheck size={30} color={colors.black}/></div>
           <div className='text_input_upload'>download complete</div>
         </div>
       }

@@ -63,9 +63,10 @@ export default class FileList extends React.Component{
                 >
                   {this.props.link}
                 </a>
+
                 <ReactTooltip id="custom-event" place="right" effect="solid" globalEventOff="click" afterShow={()=>{navigator.clipboard.writeText(this.props.link)}} />
                 <div className='link_text_2'>dein Download bleibt 12 Stunden lang gespeichert</div>
-                <div className='link_text_2'>alle Daten werden nach ablauf unwiederuflich gelöscht</div>
+                <div className='link_text_2'>...alle Daten werden nach ablauf unwiederuflich gelöscht</div>
           </div>
       )
     }
