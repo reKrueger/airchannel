@@ -24,8 +24,11 @@
 }
 
 .air_icon{
-  height: 4vh;
-  width: 4vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
 }
 .title{
   width: 100%;

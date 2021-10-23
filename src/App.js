@@ -4,7 +4,6 @@ import { Route, Switch} from 'react-router-dom';
 import UploadView from './uploadView'
 import DownloadView from './downloadView'
 import DropdownMenu from './dropdownMenu'
-import air from './AIR_1024px.png'
 import Bg from './background'
 import api from './api'
 import HelpView from './helpView';
@@ -12,6 +11,7 @@ import SpeedtestView from './speedtestView';
 import InfoView from './infoView'
 import ImprintView from './imprintView';
 import ApiView from './apiView';
+import air from './AIR_1024px.png'
 
 
 
@@ -59,11 +59,12 @@ export default class App extends React.Component{
       }
     })
   }
+//         
 
   headView = ()=>{
     return(
       <div className='head_view'>
-        <div className='title'><img className='air_icon' src={air} alt="Logo"/> AIR channel{Beta}</div>
+      <div className='title'><img className='air_icon' src={air} alt="Logo"/> AIR channel{Beta}</div>
         <div className='menu'><DropdownMenu /></div>
       </div>
     )

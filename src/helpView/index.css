@@ -13,6 +13,8 @@
 .backToAirChannel_div{
     position: absolute;
     display: flex;
+    justify-content: center;
+    align-items: center;
     top: 22px;
     left: 22px;
     border-bottom: 1px solid whitesmoke;
