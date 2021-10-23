@@ -220,19 +220,19 @@
 
 
 .send_btn{
-    height: 1.5em;
+    height: 2.2em;
     width: 5em;
     margin-left: 4px;
 
     outline: none;
-    background: rgb(255, 255, 255);
-    color: black;
+    background: rgba(29, 29, 29, 0.801);
+    color: white;
     font-size: 1.1em;
-    font-weight: 300;
+    font-weight: 500;
     border: none;
     vertical-align: bottom;
     border: 1px solid transparent;
-    border-radius: 2px;
+    border-radius: 8px;
 
 
 
@@ -240,9 +240,8 @@
 
 .send_btn:hover{
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.801);
+    background: black;
     border: 1px solid rgba(110, 110, 110, 0.952);
-    color: rgb(107, 107, 107);
     
 }
 
