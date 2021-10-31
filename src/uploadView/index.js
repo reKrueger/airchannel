@@ -1,5 +1,3 @@
-
-  
 import React from 'react';
 import './index.css'
 import api from './../api'
@@ -198,6 +196,13 @@ export default class UploadView extends React.Component{
                         this.setState(this.baseState)
                         
                     }
+                    const titel = 'Ups, Datenbank fehler !'
+                    const text = 'bitte versuchen Sie es zu eien späteren Zeitpunkt noch einmal'
+                    const cancelBtn = false
+                    const okBtnText = 'ok'
+                    cancelUploadSwal(titel, text, cancelBtn, okBtnText)
+                    this.setState(this.baseState)
+
                     return false
                 }   
             }) 
@@ -231,7 +236,7 @@ export default class UploadView extends React.Component{
 
 
 
-    countListLoop=(countlist, file,id)=>{
+    countListLoop = (countlist, file,id)=>{
         const promises = []
         for(let i of countlist){
             const count = parseInt(i) + 1
@@ -241,13 +246,18 @@ export default class UploadView extends React.Component{
         return promises
     }
 
-    s3UrlLoop=async(countlist, file, id)=>{
+    s3UrlLoop = async(countlist, file, id)=>{
         const promises = []
         for(let e of countlist){
             const count = parseInt(e) + 1
-            const u = await this.createFile(file, id, count, file.chunks[e].size)
+            const url = await this.createFile(file, id, count, file.chunks[e].size)
+            if(!url){
+                this.setState({fileLoopBreak: true})
+                break
+                
+            }
             this.cancelUpload()
-            promises.push(this.uploadFileToS3(u, file.chunks, count, file.file_guid, file.file_size))
+            promises.push(this.uploadFileToS3(url, file.chunks, count, file.file_guid, file.file_size))
         }
         return promises
     }
@@ -276,7 +286,7 @@ export default class UploadView extends React.Component{
         try {
             const form = new FormData()
             form.append('id', id)
-            form.append('chunks', count)
+            form.append('count', count)
             form.append('filename', file.file_guid)
             form.append('file_size', file.file_size)
             form.append('chunk_size', chunkSize)
@@ -288,8 +298,19 @@ export default class UploadView extends React.Component{
             
             
             return await api.create_file(form).then(res=>{
-                const presignedPostData = res.data.s3
-                return presignedPostData
+                if(res.data.isSuccess){
+                    const presignedPostData = res.data.s3
+                    return presignedPostData
+                }else{
+                    const titel = 'Ups, Datenbank fehler !'
+                    const text = 'bitte versuchen Sie es zu eien späteren Zeitpunkt noch einmal'
+                    const cancelBtn = false
+                    const okBtnText = 'ok'
+                    cancelUploadSwal(titel, text, cancelBtn, okBtnText)
+                    
+                    
+                }
+                
             })
            
         }catch (error) {
@@ -429,19 +450,8 @@ export default class UploadView extends React.Component{
         )
     }
 
+    
 
-    /**
-     * 
-     * <Modal
-                            style={SendViewStyles}
-                            isOpen={this.state.openSendView} 
-                            onRequestClose={()=>this.setState({openSendView: false})}
-                            ariaHideApp={false}
-                
-                        >
-     */
-    
-    
 
     bottomView = ()=>{
         const {mobile} = this.props
@@ -511,7 +521,7 @@ export default class UploadView extends React.Component{
                     </div>
                 }
                 {files.length>0 ? <div className='upload_list'><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
-                {upload_success ? <div className='upload_finish'><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} /></div> : null}    
+                {upload_success ? <div className={this.props.mobile?'upload_finish_mobile':'upload_finish'}><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} mobile={this.props.mobile} /></div> : null}    
             </div>
         )
     }

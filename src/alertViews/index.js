@@ -32,14 +32,14 @@ const alertView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
 }
 
 
-export const cancelUploadSwal=async()=>{
-  // Alert POP UP
- //
- const titel = 'Abbruch?'
- const text = 'sind Sie Sicher, das Sie den Upload abbrechen möchten !'
- const cancelBoolean = true
- const okBtnText = 'Ja, abbrechen'
- const cancelBtnText = 'Nein, weiter hochladen'
+export const cancelUploadSwal=async(
+  titel='Abbruch',
+  text='sind Sie Sicher, das Sie den Upload abbrechen möchten !',
+  cancelBoolean = true,
+  okBtnText = 'Ja, abbrechen',
+  cancelBtnText = 'Nein, weiter hochladen'
+
+  )=>{
 
  const answer =  await alertView(titel, text, cancelBoolean, okBtnText, cancelBtnText)
  if(answer){
