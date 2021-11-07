@@ -10,7 +10,7 @@ import Progresser from './progresser';
 const TEN = 1024 * 1024 * 10 // 10485760   == 10 MB
 const TWO = 1024 * 1024 * 2 // 10485760   == 10 MB
 const ONE = 1024 * 1024 * 1
-const ONE_KB = 1024
+const KB_256 = 1024 * 256
 const ONE_GB = 1024 * 1024 * 1024
 const HUN = 1024 * 1024 * 100 
 const unit = 'Mbit/s'
@@ -59,7 +59,7 @@ class SpeedtestView extends React.Component{
     }
 
     createUploadBlob = ()=>{
-      return new Blob([new ArrayBuffer(TEN)], {type : "text/plain"})
+      return new Blob([new ArrayBuffer(KB_256)], {type : "text/plain"})
     }
     getSpeedTestUrl = ()=>{
       const isLocal = window.location.hostname=='localhost'
