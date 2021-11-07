@@ -64,12 +64,13 @@ class SpeedtestView extends React.Component{
     getSpeedTestUrl = ()=>{
       const isLocal = window.location.hostname=='localhost'
       const autori = isLocal? 'local' : process.env.REACT_APP_AUTORI
-      const _url = isLocal? 'http://127.0.0.1:8000/speed/' :  process.env.REACT_APP_API_BASE_URL
+      const _url = isLocal? 'http://127.0.0.1:8000/speed/' :  process.env.REACT_APP_API_SPEED_URL
       return {_url, autori}
     }
 
     uploadSpeed = async()=>{
       const{_url, autori} = this.getSpeedTestUrl()
+      console.log(_url, autori)
       const dummy = this.createUploadBlob()
       const config = {
         headers:{
