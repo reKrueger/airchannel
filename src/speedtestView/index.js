@@ -95,7 +95,7 @@ class SpeedtestView extends React.Component{
               runtime = new Date().getTime() 
 
               const sec =  ((runtime - setTime) / 1000) 
-              const mos = uploadSizeToMB / sec
+              const mos = sec / uploadSizeToMB 
               console.log(' UPLOAD ')
               console.log('sec pro : ',sec, ' s')
               console.log('size pro : ',uploadSizeToMB, ' MB' )
@@ -129,9 +129,9 @@ class SpeedtestView extends React.Component{
           if(new Date().getTime() <= finishDownLoad){
             const totalLoad = progressEvent.loaded
             const loadSec = new Date().getTime()
-            const sec =  ((loadSec - runtime) / 10000) 
+            const sec =  ((loadSec - runtime) / 1000) 
             const downloadSizeToMB = (totalLoad - startLoad) / ONE
-            const mos = downloadSizeToMB / sec
+            const mos = sec / downloadSizeToMB 
             console.log(' Download ')
             console.log('sec pro : ',sec, ' s')
             console.log('size pro : ',downloadSizeToMB, ' MB' )
