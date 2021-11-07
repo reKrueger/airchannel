@@ -2,7 +2,6 @@ import React from 'react';
 import './index.css';
 import air from './../AIR_1024px.png'
 import { withRouter } from "react-router-dom";
-import fetchStream from 'fetch-readablestream';
 import axios from 'axios';
 import Progresser from './progresser';
 
@@ -11,10 +10,12 @@ const TEN = 1024 * 1024 * 10 // 10485760   == 10 MB
 const TWO = 1024 * 1024 * 2 // 10485760   == 10 MB
 const ONE = 1024 * 1024 * 1
 const KB_256 = 1024 * 256
+const KB = 1024 
 const KB_128 = 1024 * 128
 const ONE_GB = 1024 * 1024 * 1024
 const HUN = 1024 * 1024 * 100 
 const unit = 'Mbit/s'
+const MBIT = 125000
 const cancelTokenSource = axios.CancelToken.source(); 
 
 class SpeedtestView extends React.Component{
@@ -44,13 +45,7 @@ class SpeedtestView extends React.Component{
       //console.log('upload finish')
     }
 
-    scale = (mbOfSec)=>{
-      if(mbOfSec > 100){
-          return 1000
-        }else{
-          return 100
-        }
-    }
+   
     arrayAvg(arr){
       var i = 0, summ = 0, arrLen = arr.length;
       while (i < arrLen) {
@@ -60,7 +55,7 @@ class SpeedtestView extends React.Component{
     }
 
     createUploadBlob = ()=>{
-      return new Blob([new ArrayBuffer(KB_128)], {type : "text/plain"})
+      return new Blob([new ArrayBuffer(TWO)], {type : "text/plain"})
     }
     getSpeedTestUrl = ()=>{
       const isLocal = window.location.hostname=='localhost'
@@ -77,7 +72,7 @@ class SpeedtestView extends React.Component{
         headers:{
           'Authorization': `${autori}`,
           'Content-Type': 'multipart/form-data;boundary=boundary',
-          'Accept': 'application/json;text/plain'
+          'Accept': 'application/json;text/plain',
         }
       }
 
@@ -91,16 +86,17 @@ class SpeedtestView extends React.Component{
         form.append('file', dummy)
         
         await axios.post(_url + 'upload/',form, config).then(res=>{
-              const uploadSizeToMB = res.data.size / ONE
+              const uploadSizeToMB = res.data.size / MBIT
+              console.log(res.data.size, '........')
               runtime = new Date().getTime() 
 
               const sec =  ((runtime - setTime) / 1000) 
-              const mos = sec / uploadSizeToMB 
+              const mos = uploadSizeToMB / sec
               console.log(' UPLOAD ')
               console.log('sec pro : ',sec, ' s')
-              console.log('size pro : ',uploadSizeToMB, ' MB' )
+              console.log('size pro : ',uploadSizeToMB, ' MBit' )
               console.log('_____________')
-              console.log(mos, ' MB/s')
+              console.log(mos, ' MBit/s')
               console.log('_____________')
               this.setState({upload: this.state.upload.concat(mos)})
               return 
@@ -119,7 +115,6 @@ class SpeedtestView extends React.Component{
     downloadSpeed = async()=>{ 
       const{_url, autori} = this.getSpeedTestUrl()
       const finishDownLoad = new Date().getTime() + 15000 // 15 seconds of upload;
-
       var startLoad = 0
       var runtime = new Date().getTime() 
       const configDownload = {
@@ -129,14 +124,14 @@ class SpeedtestView extends React.Component{
           if(new Date().getTime() <= finishDownLoad){
             const totalLoad = progressEvent.loaded
             const loadSec = new Date().getTime()
-            const sec =  ((loadSec - runtime) / 1000) 
-            const downloadSizeToMB = (totalLoad - startLoad) / ONE
-            const mos = sec / downloadSizeToMB 
+            const sec = ((loadSec - runtime) / 1000) 
+            const downloadSizeToMB = (totalLoad - startLoad) / MBIT
+            const mos = downloadSizeToMB / sec
             console.log(' Download ')
             console.log('sec pro : ',sec, ' s')
-            console.log('size pro : ',downloadSizeToMB, ' MB' )
+            console.log('size pro : ',downloadSizeToMB, ' MBit' )
             console.log('_____________')
-            console.log(mos, ' MB/s')
+            console.log(mos, ' MBit/s')
             console.log('_____________')
             
             
