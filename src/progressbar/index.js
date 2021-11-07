@@ -25,7 +25,7 @@ const ProgressBar = (props) => {
   
     const fillerStyles = {
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
       alignItems: 'center',
       height: '100%',
       width: `${counter}%`,
