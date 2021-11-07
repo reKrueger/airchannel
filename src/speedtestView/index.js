@@ -11,6 +11,7 @@ const TEN = 1024 * 1024 * 10 // 10485760   == 10 MB
 const TWO = 1024 * 1024 * 2 // 10485760   == 10 MB
 const ONE = 1024 * 1024 * 1
 const KB_256 = 1024 * 256
+const KB_128 = 1024 * 128
 const ONE_GB = 1024 * 1024 * 1024
 const HUN = 1024 * 1024 * 100 
 const unit = 'Mbit/s'
@@ -59,7 +60,7 @@ class SpeedtestView extends React.Component{
     }
 
     createUploadBlob = ()=>{
-      return new Blob([new ArrayBuffer(KB_256)], {type : "text/plain"})
+      return new Blob([new ArrayBuffer(KB_128)], {type : "text/plain"})
     }
     getSpeedTestUrl = ()=>{
       const isLocal = window.location.hostname=='localhost'
@@ -99,6 +100,8 @@ class SpeedtestView extends React.Component{
               console.log('sec pro : ',sec, ' s')
               console.log('size pro : ',uploadSizeToMB, ' MB' )
               console.log('_____________')
+              console.log(mos, ' MB/s')
+              console.log('_____________')
               this.setState({upload: this.state.upload.concat(mos)})
               return 
           })
@@ -128,12 +131,15 @@ class SpeedtestView extends React.Component{
             const loadSec = new Date().getTime()
             const sec =  ((loadSec - runtime) / 10000) 
             const downloadSizeToMB = (totalLoad - startLoad) / ONE
+            const mos = downloadSizeToMB / sec
             console.log(' Download ')
             console.log('sec pro : ',sec, ' s')
             console.log('size pro : ',downloadSizeToMB, ' MB' )
             console.log('_____________')
+            console.log(mos, ' MB/s')
+            console.log('_____________')
             
-            const mos = downloadSizeToMB / sec
+            
             this.setState({download: this.state.download.concat(mos)})
             startLoad = totalLoad
             runtime = loadSec

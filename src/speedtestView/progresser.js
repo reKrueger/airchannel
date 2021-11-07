@@ -52,7 +52,7 @@ const Progresser = (props) => {
 
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
-        height: `${(counter/10)}%`,
+        height: `${(counter)}%`,
         backgroundColor: colors.black,
       
     }
