@@ -16,8 +16,8 @@ const ONE_GB = 1024 * 1024 * 1024
 const HUN = 1024 * 1024 * 100 
 const unit = 'Mbit/s'
 const MBIT = 125000
-const cancelTokenSource = axios.CancelToken.source(); 
-
+const cancelTokenUpload= axios.CancelToken.source(); 
+const cancelTokenDownload = axios.CancelToken.source(); 
 class SpeedtestView extends React.Component{
 
     constructor(props){
@@ -100,22 +100,22 @@ class SpeedtestView extends React.Component{
             console.log('_____________')
             
             
-            this.setState({upload: this.state.download.concat(mos)})
+            this.setState({upload: this.state.upload.concat(mos)})
             startLoad = loaded
             runtime = loadSec
             
     
           }else{
-            const {download} = this.state
-            this.setState({upload: this.state.download.concat(this.arrayAvg(download))})
+            const {upload} = this.state
+            this.setState({upload: this.state.upload.concat(this.arrayAvg(upload))})
             console.log('CANCEL DOWNLOAD')
-            cancelTokenSource.cancel();
+            cancelTokenUpload.cancel();
           } 
         },
         url: _url + 'upload/',
         data: form,
         method: 'post',
-        cancelToken: cancelTokenSource.token,
+        cancelToken: cancelTokenUpload.token,
         headers:{
           'Authorization': `${autori}`,
           'Content-Type': 'application/octet-stream', //'multipart/form-data;boundary=boundary',
@@ -181,7 +181,7 @@ class SpeedtestView extends React.Component{
             const {download} = this.state
             this.setState({download: this.state.download.concat(this.arrayAvg(download))})
             console.log('CANCEL DOWNLOAD')
-            cancelTokenSource.cancel();
+            cancelTokenDownload.cancel();
           } 
           
           
@@ -190,7 +190,7 @@ class SpeedtestView extends React.Component{
         },
         url: _url + 'download/',
         method: 'get',
-        cancelToken: cancelTokenSource.token
+        cancelToken: cancelTokenDownload.token
       
       
       }
