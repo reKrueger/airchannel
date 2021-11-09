@@ -40,7 +40,6 @@ class SpeedtestView extends React.Component{
       const up = await this.uploadSpeed()
       console.log('start download')
       const buffer = await this.downloadSpeed()
-      //console.log('download finish', buffer)
       
       //console.log('upload finish')
     }
@@ -53,9 +52,12 @@ class SpeedtestView extends React.Component{
       }
       return summ / arrLen;
     }
+    
+  
 
     createUploadBlob = ()=>{
-      return new Blob([new ArrayBuffer(TWO)], {type : "text/plain"})
+      return new Blob([new ArrayBuffer(HUN)], {type : 'application/octet-stream'})
+
     }
     getSpeedTestUrl = ()=>{
       const isLocal = window.location.hostname=='localhost'
@@ -64,46 +66,83 @@ class SpeedtestView extends React.Component{
       return {_url, autori}
     }
 
+    show = (progressEvent)=>{
+      
+    }
+      
+      
+      
+     
+
     uploadSpeed = async()=>{
       const{_url, autori} = this.getSpeedTestUrl()
       console.log(_url, autori)
       const dummy = this.createUploadBlob()
+      const form = new FormData()
+      form.append('file', dummy)
+      const finishDownLoad = new Date().getTime() + 15000 
+      var runtime = new Date().getTime() 
+      var startLoad = 0
       const config = {
+        onUploadProgress: progressEvent => {
+          if(new Date().getTime() <= finishDownLoad){
+            const loaded = progressEvent.loaded
+            console.log('____> ',loaded)
+            const loadSec = new Date().getTime()
+            const sec = ((loadSec - runtime) / 1000) 
+            const downloadSizeToMBit = (loaded - startLoad) / MBIT
+            const mos = downloadSizeToMBit / sec
+            console.log(' upload ')
+            console.log('sec pro : ',sec, ' s')
+            console.log('size pro : ',downloadSizeToMBit, ' MBit' )
+            console.log('_____________')
+            console.log(mos, ' MBit/s')
+            console.log('_____________')
+            
+            
+            this.setState({upload: this.state.download.concat(mos)})
+            startLoad = loaded
+            runtime = loadSec
+            
+    
+          }else{
+            const {download} = this.state
+            this.setState({upload: this.state.download.concat(this.arrayAvg(download))})
+            console.log('CANCEL DOWNLOAD')
+            cancelTokenSource.cancel();
+          } 
+        },
+        url: _url + 'upload/',
+        data: form,
+        method: 'post',
+        cancelToken: cancelTokenSource.token,
         headers:{
           'Authorization': `${autori}`,
-          'Content-Type': 'multipart/form-data;boundary=boundary',
+          'Content-Type': 'application/octet-stream', //'multipart/form-data;boundary=boundary',
           'Accept': 'application/json;text/plain',
         }
       }
-
-      var runtime = new Date().getTime() 
-      const endTime = new Date().getTime() + 15000 // 15 seconds of upload
-      console.log(runtime , '..... ', endTime) 
-      while(endTime >=  runtime ){
-        const setTime = new Date().getTime() 
-
-        const form = new FormData()
-        form.append('file', dummy)
-        
-        await axios.post(_url + 'upload/',form, config).then(res=>{
-              const uploadSizeToMB = res.data.size / MBIT
-              console.log(res.data.size, '........')
-              runtime = new Date().getTime() 
-
-              const sec =  ((runtime - setTime) / 1000) 
-              const mos = uploadSizeToMB / sec
-              console.log(' UPLOAD ')
-              console.log('sec pro : ',sec, ' s')
-              console.log('size pro : ',uploadSizeToMB, ' MBit' )
-              console.log('_____________')
-              console.log(mos, ' MBit/s')
-              console.log('_____________')
-              this.setState({upload: this.state.upload.concat(mos)})
-              return 
-          })
-      }
-      const {upload} = this.state
-      this.setState({upload: this.state.upload.concat(this.arrayAvg(upload))})
+      
+      
+      await axios(config)
+      .catch(function (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
       
     }
 
@@ -120,23 +159,22 @@ class SpeedtestView extends React.Component{
       const configDownload = {
         responseType: 'arraybuffer',
         onDownloadProgress:(progressEvent)=> {
-          
           if(new Date().getTime() <= finishDownLoad){
-            const totalLoad = progressEvent.loaded
+            const loaded = progressEvent.loaded
             const loadSec = new Date().getTime()
             const sec = ((loadSec - runtime) / 1000) 
-            const downloadSizeToMB = (totalLoad - startLoad) / MBIT
-            const mos = downloadSizeToMB / sec
+            const downloadSizeToMBit = (loaded - startLoad) / MBIT
+            const mos = downloadSizeToMBit / sec
             console.log(' Download ')
             console.log('sec pro : ',sec, ' s')
-            console.log('size pro : ',downloadSizeToMB, ' MBit' )
+            console.log('size pro : ',downloadSizeToMBit, ' MBit' )
             console.log('_____________')
             console.log(mos, ' MBit/s')
             console.log('_____________')
             
             
             this.setState({download: this.state.download.concat(mos)})
-            startLoad = totalLoad
+            startLoad = loaded
             runtime = loadSec
 
           }else{

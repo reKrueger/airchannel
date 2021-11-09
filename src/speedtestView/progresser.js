@@ -61,7 +61,7 @@ const Progresser = (props) => {
     return(
         <div className='speedFrame'>
             <div className='speedContainer'>
-                <div className='speedCount'>{`${Math.floor(counter)} Mbit/s`}</div>
+                <div className='speedCount'>{`${Math.round(counter*100)/100} Mbit/s`}</div>
                 <div style={fillerStyles}/>
             </div>
         </div>
