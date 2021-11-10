@@ -66,9 +66,6 @@ class SpeedtestView extends React.Component{
       return {_url, autori}
     }
 
-    show = (progressEvent)=>{
-      
-    }
       
       
       
@@ -108,7 +105,7 @@ class SpeedtestView extends React.Component{
           }else{
             const {upload} = this.state
             this.setState({upload: this.state.upload.concat(this.arrayAvg(upload))})
-            console.log('CANCEL DOWNLOAD')
+            console.log('CANCEL UPLOAD')
             cancelTokenUpload.cancel();
           } 
         },
@@ -124,7 +121,9 @@ class SpeedtestView extends React.Component{
       }
       
       
-      await axios(configUpload)
+      return await axios(configUpload).catch(error => {
+        console.log(error.message);
+      });
       
       
     }
