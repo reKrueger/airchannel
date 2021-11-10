@@ -144,7 +144,7 @@ class SpeedtestView extends React.Component{
         onDownloadProgress:(progressEvent)=> {
           if(new Date().getTime() <= finishDownLoad){
             const loaded = progressEvent.loaded
-            const times = (progressEvent.timeStamp / 100000) - startTime
+            const times = (progressEvent.timeStamp / 1000) - startTime
             const loadSec = new Date().getTime()
             const sec = ((loadSec - runtime) / 1000) 
             const downloadSizeToMBit = (loaded - startLoad) / MBIT
@@ -159,7 +159,7 @@ class SpeedtestView extends React.Component{
             
             startLoad = loaded
             runtime = loadSec
-            startTime = progressEvent.timeStamp / 100000
+            startTime = progressEvent.timeStamp / 1000
             this.setState({download: this.state.download.concat(mos)})
             
 
