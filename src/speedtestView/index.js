@@ -176,13 +176,17 @@ class SpeedtestView extends React.Component{
         },
         url: _url + 'download/',
         method: 'get',
-        cancelToken: cancelTokenDownload.token
+        cancelToken: cancelTokenDownload.token,
+        headers:{
+          'Authorization': `${autori}`,
+        }
       
       
       }
     
 
       return await axios(configDownload)
+        .then(res => {return res.data})
         .catch(error => {
             console.log(error.message);
         });
