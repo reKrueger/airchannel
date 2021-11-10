@@ -83,7 +83,7 @@ class SpeedtestView extends React.Component{
       const finishDownLoad = new Date().getTime() + 15000 
       var runtime = new Date().getTime() 
       var startLoad = 0
-      const config = {
+      const configUpload = {
         onUploadProgress: progressEvent => {
           if(new Date().getTime() <= finishDownLoad){
             const loaded = progressEvent.loaded
@@ -124,25 +124,8 @@ class SpeedtestView extends React.Component{
       }
       
       
-      await axios(config)
-      .catch(function (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-      });
+      await axios(configUpload)
+      
       
     }
 
@@ -156,26 +139,30 @@ class SpeedtestView extends React.Component{
       const finishDownLoad = new Date().getTime() + 15000 // 15 seconds of upload;
       var startLoad = 0
       var runtime = new Date().getTime() 
+      var startTime = 0
       const configDownload = {
         responseType: 'arraybuffer',
         onDownloadProgress:(progressEvent)=> {
           if(new Date().getTime() <= finishDownLoad){
             const loaded = progressEvent.loaded
+            const times = (progressEvent.timeStamp / 100000) - startTime
             const loadSec = new Date().getTime()
             const sec = ((loadSec - runtime) / 1000) 
             const downloadSizeToMBit = (loaded - startLoad) / MBIT
-            const mos = downloadSizeToMBit / sec
+            const mos = downloadSizeToMBit / times
             console.log(' Download ')
+            console.log(times)
             console.log('sec pro : ',sec, ' s')
             console.log('size pro : ',downloadSizeToMBit, ' MBit' )
             console.log('_____________')
             console.log(mos, ' MBit/s')
             console.log('_____________')
             
-            
-            this.setState({download: this.state.download.concat(mos)})
             startLoad = loaded
             runtime = loadSec
+            startTime = progressEvent.timeStamp / 100000
+            this.setState({download: this.state.download.concat(mos)})
+            
 
           }else{
             const {download} = this.state
