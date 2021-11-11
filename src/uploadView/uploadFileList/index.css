@@ -50,12 +50,12 @@
 
 
 /* item */
-.item_frame{
-    height: 9vh;
+.fileList_item_frame{
+    height: 60px;
     width: 95%;
-    background: rgba(0, 0, 0, 0.041);
     border-radius: 2px;
     margin-bottom: 0.5vh;
+    background: whitesmoke;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,7 +73,7 @@
 .folder_frame_div{
     height: 9vh;
     width: 95%;
-    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
+    background: #fff;  /* item backround !!!! */
     border-radius: 2px;
     display: flex;
     justify-content: space-between;
@@ -86,7 +86,7 @@
 .item_frame{
     height: 9vh;
     width: 95%;
-    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
+    background: #fff;  /* item backriund !!!! */
     border-radius: 2px;
     margin-bottom: 0.5vh;
     display: flex;
@@ -103,8 +103,12 @@
 }
 
 .item_icon{
-    width: auto;
+    
+    width: 40px;
     height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     
 }
 
@@ -115,6 +119,7 @@
     align-items: baseline;
     max-height: 98%;
     height: auto;
+    font-size: 0.8em;
     break-inside: auto;
     overflow: hidden;
 

@@ -17,23 +17,10 @@
 
 
 /* item */
-.download_item_frame{
-    height: 9vh;
-    width: 95%;
-    background: rgba(187, 187, 187, 0.486);  /* item backriund !!!! */
-    border-radius: 2px;
-    margin: 2px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
 
-
-}
 
 .download_item_icon_div{
     width: auto;
-    margin-left: 0.6vh;
 }
 
 .download_item_icon{
@@ -43,7 +30,8 @@
 }
 
 .download_item_name_div{
-    width: 70%;
+    width: 100%;
+    margin-right: 5px;
     display: flex;
     justify-content: flex-start;
     align-items: baseline;

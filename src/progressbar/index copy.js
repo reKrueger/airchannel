@@ -1,12 +1,18 @@
 
-import './index.css'
+/*
+
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    */
+
 import colors from './../colors'
 const ProgressBar = (props) => {
     const { bgcolor, counter } = props;
   
     const containerStyles = {
       //position: 'absolute',
-      height: '150px',
+      height: '6vh',
       width: '100%',
       backgroundColor: "rgba(255, 255, 255, 0.512)",
       borderRadius: '0vh',
@@ -21,7 +27,6 @@ const ProgressBar = (props) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      marginLeft: '5px',
       height: '100%',
       width: `${counter}%`,
       backgroundColor: colors.black,
@@ -30,9 +35,9 @@ const ProgressBar = (props) => {
   
     const labelStyles = {
       color: 'black',
-      height: '100%',
-      width: '100%',
-      //border: '1px solid rgba(151, 151, 151, 0.812)',
+      height: '6vh',
+      width: '5em',
+      border: '1px solid rgba(151, 151, 151, 0.812)',
       textShadow: `1px 1px ${colors.grey}`,
       //paddingLeft:'3vw',
       fontSize: '150%',
@@ -41,13 +46,14 @@ const ProgressBar = (props) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      marginLeft: '30px',
       backgroundColor: "rgba(255, 255, 255, 0.512)",
-      
+      borderRadius: '2px',
     }
     
     const progressDiv = {
-      height: 'auto',
-      width: '100vw',
+      height: '100%',
+      width: '94%',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -59,13 +65,11 @@ const ProgressBar = (props) => {
 
     return (
       <div style={progressDiv}>
-      <div className="c-subscribe-box u-align-center">
-        <div className="rainbow"><span></span><span></span></div>
-          <div className="c-subscribe-box__wrapper">
-          <div style={labelStyles}>{`${Math.floor(counter)} %`}</div>
-            
+        <div style={labelStyles}>{`${Math.floor(counter)} %`}</div>
+        <div style={containerStyles}>
+          <div style={fillerStyles}>
+          </div>
         </div>
-      </div>
       </div>
     );
   };

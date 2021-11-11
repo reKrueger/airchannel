@@ -177,11 +177,14 @@ export default class UploadView extends React.Component{
         let majorId = this.state.majorId
         if(!majorId){
             const form = new FormData()
-            form.append('mail_to', infos.mail_to)
+            form.append('mail_to', [infos.mail_to])
             form.append('mail_user', infos.mail_user)
             form.append('message', infos.message)
             form.append('use_download', infos.useDownload)
             form.append('use_link', infos.useLink)
+            console.log('')
+            console.log('info ',infos)
+            console.log('')
             //
             // create Major Model
             majorId = await api.create_major(form).then(res=>{
@@ -515,12 +518,12 @@ export default class UploadView extends React.Component{
                     :
                     <div>{!showProgress? null: 
                         <div className='progressbar_view'>
-                            <ProgressBar counter={progress} bgcolor={colors.accentColor}/>
                             <div className='cancel_place'><CancelView loopBreak={()=>this.setState({fileLoopBreak: true})} /></div>
+                            <ProgressBar counter={progress} bgcolor={colors.accentColor}/>
                         </div>}
                     </div>
                 }
-                {files.length>0 ? <div className='upload_list'><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
+                {files.length>0 ? <div className='upload_list' style={!showProgress? null: {'bottom': '2vh'}}><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
                 {upload_success ? <div className={this.props.mobile?'upload_finish_mobile':'upload_finish'}><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} mobile={this.props.mobile} /></div> : null}    
             </div>
         )

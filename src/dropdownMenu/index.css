@@ -19,7 +19,7 @@
     height: 50px;
     position: relative;
     overflow: hidden;
-    background: rgba(187, 187, 187, 0.486);
+    background: rgba(255, 255, 255, 0.568);
     border-radius: 2px;
     box-sizing: border-box;
     cursor: default;
@@ -27,8 +27,6 @@
   }
   
   .Dropdown-control:hover {
-    background-color: rgba(167, 159, 159, 0.13);
-    border: 1px solid rgba(167, 159, 159, 0.371);
     border-radius: 2px;
     cursor: pointer;
   }
@@ -37,7 +35,7 @@
 .Dropdown-menu {
     width: 200px;
     max-height:400px;
-    background: rgba(187, 187, 187, 0.486);
+    background: linear-gradient(to left, white 1%, transparent);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
     box-sizing: border-box;
     border-radius: 2px;

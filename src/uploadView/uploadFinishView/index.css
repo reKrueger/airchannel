@@ -4,7 +4,7 @@
 .view_finish{
     width: 100%;
     height: 100%;
-    background: rgba(187, 187, 187, 0.776);
+    background: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +15,7 @@
 .view_finish_mobile{
     width: 100%;
     height: 100%;
-    background: rgba(187, 187, 187, 0.776);
+    background: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -62,7 +62,7 @@
     justify-content: center;
     align-items: center;
     font-style: italic;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .email_text{
@@ -81,7 +81,7 @@
 
 .link_copy{
     width: 80%;
-    height: 5em;
+    height: auto;
     padding: 10px 10px;
     border: 1px solid rgb(0, 0, 0);
     border-radius: 2px;

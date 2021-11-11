@@ -146,12 +146,10 @@ class SpeedtestView extends React.Component{
             const loaded = progressEvent.loaded
             const times = (progressEvent.timeStamp / 1000) - startTime
             const loadSec = new Date().getTime()
-            const sec = ((loadSec - runtime) / 1000) 
             const downloadSizeToMBit = (loaded - startLoad) / MBIT
             const mos = downloadSizeToMBit / times
             console.log(' Download ')
-            console.log(times)
-            console.log('sec pro : ',sec, ' s')
+            console.log('sec pro : ',times, ' s')
             console.log('size pro : ',downloadSizeToMBit, ' MBit' )
             console.log('_____________')
             console.log(mos, ' MBit/s')
@@ -179,6 +177,7 @@ class SpeedtestView extends React.Component{
         cancelToken: cancelTokenDownload.token,
         headers:{
           'Authorization': `${autori}`,
+          'Accept': 'application/octet-stream',
         }
       
       

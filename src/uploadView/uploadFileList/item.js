@@ -20,9 +20,9 @@ export default class Item extends React.Component{
         const is_load = this.props.load
 
         return(
-            <div className='download_item_frame'>
+            <div className='fileList_item_frame'>
                 <div className='item_icon_div'>
-                    <div className='item_icon'>{is_load? <SquareLoader color={color.black} loading={true}  size={26} />:<VscFile size={30}/>}</div>
+                    <div className='item_icon'>{is_load? <SquareLoader color={color.black} loading={true}  size={30} />:<VscFile size={30}/>}</div>
                 </div>
                 <div className='item_name_div'>
                     <div className='item_name'>{item.origin_name}</div>
