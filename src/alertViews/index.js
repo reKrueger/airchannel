@@ -12,7 +12,7 @@ const alertView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
     // Alert POP UP
     //
     const e = Swal.fire({
-        background: 'rgba(187, 187, 187, 0.886)',
+        background: 'white',
         title: title,
         text: text,
         icon: 'warning',

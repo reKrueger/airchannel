@@ -35,7 +35,7 @@
 .Dropdown-menu {
     width: 200px;
     max-height:400px;
-    background: linear-gradient(to left, white 1%, transparent);
+    background: linear-gradient(310deg, white 1%, transparent);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
     box-sizing: border-box;
     border-radius: 2px;

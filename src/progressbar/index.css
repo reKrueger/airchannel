@@ -108,3 +108,89 @@
   }
   
   
+
+
+
+
+
+  /* new BAR */
+
+
+
+
+/*    new */
+.TransferBar{
+  width: auto;
+  height: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.container_transferBar {
+  position: relative;
+  width: 60vw;
+  height: 35px;
+}
+.container_transferBar  .transfer_progressbar-container {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  display: flex;
+  border: 1px solid rgb(187, 187, 187);
+  align-items: center;
+  color: #fff;
+  border-radius: 10px;
+  justify-content: center;
+  overflow: hidden;
+  background: rgb(184, 184, 184);
+}
+.container_transferBar  .transfer_progressbar-container .transfer_progressbar-complete {
+  position: absolute;
+  left: 0;
+  top: 0px;
+  height: 100%;
+  background-color: #5225bd;
+  animation: f 2500ms infinite ease-in-out;
+  border-radius: 10px;
+  z-index: 2;
+}
+.container_transferBar  .transfer_progressbar-container .transfer_progressbar-complete .transfer_progressbar-liquid {
+  z-index: 1;
+  width: 70px;
+  height: 70px;
+  animation: f 2500ms infinite ease-in-out, t 3000ms infinite cubic-bezier(0.5, 0.5, 0.5, 0.5);
+  position: absolute;
+  right: -5px;
+  top: -10px;
+  background-color: #5225bd;
+  border-radius: 40%;
+}
+.container_transferBar  .transfer_progressbar-container .transfer_progress {
+  z-index: 2;
+  
+}
+
+
+.transfer_progressbar-complete{
+  color: #fff;
+}
+@keyframes f {
+  0% {
+    background-color: rgb(53, 51, 51);
+  }
+  50% {
+    background-color: rgba(93, 93, 93, 0.89);
+  }
+  100% {
+    background-color: rgb(53, 51, 51);
+  }
+}
+@keyframes t {
+  from {
+    transform: rotate(0deg);
+  }
+  from {
+    transform: rotate(360deg);
+  }
+}

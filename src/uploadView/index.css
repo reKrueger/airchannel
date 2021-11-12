@@ -14,12 +14,13 @@
 
 .frame_input_upload{
     width: 100%;
-    background: linear-gradient(to right, white 2%, transparent)
+    background: linear-gradient(0.2deg, white 85%, transparent);
+    height: 100px;
   }
 
 .div_input_upload{
   width: auto;
-  height: 12vh;
+  height: 100px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -125,7 +126,7 @@
     position: absolute;
     height: auto;
     width: 20vw;
-    max-height: 50vh;
+    max-height: 35vh;
     min-width: 300px;
     bottom: 13vh;
     left: 1vh;
@@ -170,8 +171,9 @@
 
   .progressbar_view{
     position: absolute;
-    width: auto;
-    height: 8vh;
+    width: 100vw;
+    bottom: 0px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -179,10 +181,9 @@
     
   }
   .cancel_place{
-    position: absolute;
-    background: none;
-    bottom: 120px;
+    position: relative;
     width: auto;
+    margin-right: 1em;
     display: flex;
     justify-content: center;
     align-items: center;

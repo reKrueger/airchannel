@@ -57,7 +57,7 @@
 .actions_view{
   position: absolute;
   width: 100vw;
-  height: 12vh;
+  height: 100px;
   bottom: 0;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -93,6 +93,6 @@
   height: auto;
   font-style: italic;
   font-weight: 400;
-  font-size: 2em;
-  color: rgba(255, 255, 255, 0.212);
+  font-size: 1em;
+  color: black;
 }

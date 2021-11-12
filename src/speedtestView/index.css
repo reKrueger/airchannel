@@ -8,7 +8,7 @@
     height: 100vh;
     background: rgb(66, 66, 66);
     color: whitesmoke;
-    font-size: 2em;
+    font-size: 1.1em;
 }
 
 .backToAirChannel_div{
@@ -29,19 +29,19 @@
 }
 
 .prgressViewContainer{
-    width: 95vw;
-    height: auto;
+    width: 90vW;
+    height: 65vh;
     background: none;
-    margin-top: 100px;
+    margin-top: 50px;
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.171);
 }
 
 .speedStartDiv{
     width: 100vw;
-    height: 2.2em;
+    height: 2.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -49,11 +49,11 @@
 .speedStartBtn{
     outline: none;
     border: none;
-    background: rgba(180, 180, 180, 0.479);
+    background: #fff;
     height: auto;
     width: 7em;
-    font-size: 1.1em;
-    color: rgba(245, 245, 245, 0.418);
+    font-size: 1em;
+    color: black;
     font-weight: 300;
     border-radius: 2px;
 
@@ -71,40 +71,7 @@
 
 
 
-.speedFrame{
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
 
-}
-
-.speedCount{
-    border-bottom: 1px solid white;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 200px;
-    height: auto;
-    margin-top: -2em ;
-    background: transparent;
-
-
-}
-.speedContainer{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    height: 400px;
-    width: 6vw;
-    background: rgba(245, 245, 245, 0.24);
-}
-
-.progressEvent{
-    width: 6vw;
-    background: rgba(245, 245, 245, 0.856);
-}
 
 
 
@@ -120,8 +87,9 @@
 }
 .isRun{
     width: 100%;
-    font-size: 0.7em;
+    font-size: 1.1em;
     text-align: center;
+    border-bottom: 1px solid white;
 }
 
 .speedTextCon{
@@ -129,12 +97,77 @@
     height: 3em;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     font-size: 0.8em;
     font-style: italic;
 
 }
-.speedTextRow1{
 
-}
+
+
+
+
+
+
+
+/*    new */
+
+  
+  .container_bar {
+    width: 70vw;
+    margin: 50px auto;
+  }
+  .container_bar .progressbar-container {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .container_bar .progressbar-container .progressbar-complete {
+    position: absolute;
+    left: 0;
+    top: 0px;
+    height: 100%;
+    background-color: #fff;
+    animation: g 2500ms infinite ease-in-out;
+    z-index: 2;
+  }
+  .container_bar .progressbar-container .progressbar-complete .progressbar-liquid {
+    z-index: 1;
+    width: 70px;
+    height: 70px;
+    animation: g 2500ms infinite ease-in-out, r 3000ms infinite cubic-bezier(0.5, 0.5, 0.5, 0.5);
+    position: absolute;
+    right: -5px;
+    top: -10px;
+    background-color: #fff;
+    border-radius: 40%;
+  }
+  .container_bar .progressbar-container .progress {
+    z-index: 2;
+  }
+  
+  @keyframes g {
+    0% {
+      background-color: #7db18c8e;
+    }
+    50% {
+      background-color: #7db18c;
+    }
+    100% {
+      background-color: #7db18c8e;
+    }
+  }
+  @keyframes r {
+    from {
+      transform: rotate(0deg);
+    }
+    from {
+      transform: rotate(360deg);
+    }
+  }

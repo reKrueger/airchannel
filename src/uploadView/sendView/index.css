@@ -16,7 +16,7 @@
     overflow: hidden;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;
-    background: whitesmoke;  /* Firefox */
+    background: white;  /* Firefox */
 }
 
 
@@ -30,7 +30,7 @@
     width: 100vw;
     height: 100%;
     overflow-y: scroll;
-    background: whitesmoke;
+    background: white;
 }
 
 .send_view_frame{
@@ -89,14 +89,13 @@
     height: 5em;
     font-style: italic;
     font-weight: 400;
-    font-size: 0.9em;
-    color: rgb(49, 49, 49);
+    font-size: 0.8em;
+    color: black;
     display: flex;
     justify-content: center;
     align-items: center;
     padding-left: 0.4em;
     padding-right: 0.4em;
-    border-radius: 2px;
 
 }
 
@@ -145,18 +144,7 @@
     border-bottom: 1px solid black;
 }
 
-.send_type_btn{
-    height: 2em;
-    width: 2em;
-    outline: none;
-    border: none;
-}
 
-.send_type_btn:hover{
-    cursor: pointer;
-    background:rgb(66, 66, 66);
-
-}
 
 
 
@@ -166,9 +154,9 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-style: italic;
-    color: rgba(71, 71, 71);
+    color: black;
     width: 100%;
     height: 100%;
     margin: 0 auto;
@@ -191,13 +179,14 @@
     font-family: inherit;
     width: 98%;
     height: auto;
+    padding: 1em ;
     border: 1px solid rgba(112, 112, 112, 0.664);
     border-radius: 2px;
     font-size: large;
     color: black;
     outline: none;
     resize: none;
-    background: rgba(187, 187, 187, 0.486);
+    background: whitesmoke;
     font-weight: 400;
 
 
@@ -214,24 +203,24 @@
     height: 3em;
     margin: 0 auto;
     text-align: center;
-    width: 100%;
+    width: 98%;
 }
 
 
 
 .send_btn{
-    height: 2.2em;
+    height: 2.3em;
     width: 5em;
-    margin-left: 4px;
-
     outline: none;
     background: rgba(29, 29, 29, 0.801);
     color: white;
     font-size: 1.1em;
+
     font-weight: 500;
     border: none;
     vertical-align: bottom;
-    border: 1px solid transparent;
+    border: 1px solid black;
+    border-radius: 0.4em;
 
 
 

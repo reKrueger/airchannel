@@ -25,17 +25,13 @@ const htmlLayout = (infos)=>{
         <div style={{fontWeight: '600',height: '1.5em'}}> Dateigröße: <span style={{fontWeight: '300'}}> {upload_size}</span></div>
         <div style={{fontWeight: '600',height: '1.5em'}}> Absender: <span style={{fontWeight: '300'}}> {is_mail}</span></div>
         <div style={{fontWeight: '600',height: '1.5em'}}> Empfänger: <span style={{fontWeight: '300'}}> {is_mail_to}</span></div>
-        <div style={{fontWeight: '600',height: '1.5em'}}> Speicher Option: <span style={{fontWeight: '300'}}> {is_use_download}</span></div>
+        <div style={{fontWeight: '600',height: 'auto'}}> Speicheroption: <span style={{fontWeight: '300'}}> {is_use_download}</span></div>
         <div style={{fontWeight: '600',height: '1.5em'}}> Übermittlungsart: <span style={{fontWeight: '300'}}> {is_use_link}</span></div>
     </div>
   )
 }
 
-const test = {
-  backgroundColor: 'yellow',
-  color: 'black'
-  
-}
+
 
 //background: rgba(187, 187, 187, 0.886);
 const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
@@ -43,7 +39,7 @@ const infoView = (title, text, cancelBtn, okBtnText, cancelBtnText)=>{
     // Alert POP UP
     //
     const e = Swal.fire({
-        background: 'rgba(187, 187, 187, 0.886)',
+        background: 'white',
         title: title,
         html: text,
         icon: 'info',

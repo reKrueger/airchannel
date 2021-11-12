@@ -3,7 +3,7 @@ import './index.css';
 import air from './../AIR_1024px.png'
 import { withRouter } from "react-router-dom";
 import axios from 'axios';
-import Progresser from './progresser';
+import Bar from './bar'
 
 
 const TEN = 1024 * 1024 * 10 // 10485760   == 10 MB
@@ -137,15 +137,15 @@ class SpeedtestView extends React.Component{
       const{_url, autori} = this.getSpeedTestUrl()
       const finishDownLoad = new Date().getTime() + 15000 // 15 seconds of upload;
       var startLoad = 0
-      var runtime = new Date().getTime() 
       var startTime = 0
+
       const configDownload = {
-        responseType: 'arraybuffer',
+        //responseType: 'arraybuffer',
         onDownloadProgress:(progressEvent)=> {
           if(new Date().getTime() <= finishDownLoad){
+            console.log(progressEvent)
             const loaded = progressEvent.loaded
             const times = (progressEvent.timeStamp / 1000) - startTime
-            const loadSec = new Date().getTime()
             const downloadSizeToMBit = (loaded - startLoad) / MBIT
             const mos = downloadSizeToMBit / times
             console.log(' Download ')
@@ -156,13 +156,13 @@ class SpeedtestView extends React.Component{
             console.log('_____________')
             
             startLoad = loaded
-            runtime = loadSec
             startTime = progressEvent.timeStamp / 1000
             this.setState({download: this.state.download.concat(mos)})
             
 
           }else{
             const {download} = this.state
+            console.log(download)
             this.setState({download: this.state.download.concat(this.arrayAvg(download))})
             console.log('CANCEL DOWNLOAD')
             cancelTokenDownload.cancel();
@@ -236,19 +236,14 @@ class SpeedtestView extends React.Component{
             <div className='backToAirChannel_div' onClick={()=>this.props.history.push('/')}>back to <img className='air_icon' src={air} alt="Logo"/> AIR channel</div>
             <div className='prgressViewContainer'>
               <div className='speedField'>
-                <Progresser counter={upMos} />
-                <div className='isRun'>UPLOAD TEST</div>
+              <div className='isRun'>UPLOAD TEST</div>
+                <Bar counter={upMos} />
                   {this.textView('UPLOAD TEST')}
               </div>
               <div className='speedField'>
-                <Progresser counter={downMos} />
-                <div className='isRun'>DOWNLOAD TEST</div>
+              <div className='isRun'>DOWNLOAD TEST</div>
+                <Bar counter={downMos} />
                   {this.textView('DOWNLOAD TEST')}
-              </div>
-              <div className='speedField'>
-                <Progresser counter={0} />
-                <div className='isRun'>TEST</div>
-                  {this.textView(' TEST')}
               </div>
             </div>
             <div className='speedStartDiv'><button className='speedStartBtn' onClick={()=>this.startTest()}>START TEST</button></div>

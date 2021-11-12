@@ -51,17 +51,17 @@
 
 /* item */
 .fileList_item_frame{
-    height: 60px;
+    height: 50px;
     width: 95%;
     border-radius: 2px;
     margin-bottom: 0.5vh;
-    background: whitesmoke;
+    background: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
-    overflow-y: scroll; 
+    overflow: hidden; 
 
 
 

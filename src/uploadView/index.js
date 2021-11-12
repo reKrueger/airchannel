@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css'
 import api from './../api'
-import ProgressBar from './../progressbar'
+import Bar from './../progressbar/transferBar'
 import Itemlist from './uploadFileList'
 import FinishView from './uploadFinishView'
 import SendView from './sendView'
@@ -513,17 +513,14 @@ export default class UploadView extends React.Component{
         const {showProgress, files, progress, upload_begin, link, upload_success, mailConfirm, isLink} = this.state
         return (
             <div className='frame_input_upload'>
-                {!showProgress?
-                    this.bottomView()
-                    :
-                    <div>{!showProgress? null: 
+                <div>{!showProgress? this.bottomView(): 
                         <div className='progressbar_view'>
                             <div className='cancel_place'><CancelView loopBreak={()=>this.setState({fileLoopBreak: true})} /></div>
-                            <ProgressBar counter={progress} bgcolor={colors.accentColor}/>
+                            <Bar counter={Math.floor(progress)}/>
                         </div>}
                     </div>
-                }
-                {files.length>0 ? <div className='upload_list' style={!showProgress? null: {'bottom': '2vh'}}><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
+                
+                {files.length>0 ? <div className='upload_list'><Itemlist items={files} load={upload_begin} removeItem={(e)=>this.removeItem(e)} removeFolder={(e)=>this.removeFolder(e)}/></div> : null}
                 {upload_success ? <div className={this.props.mobile?'upload_finish_mobile':'upload_finish'}><FinishView link={link} mailConfirm={mailConfirm} isLink={isLink} mobile={this.props.mobile} /></div> : null}    
             </div>
         )

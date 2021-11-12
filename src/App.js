@@ -64,7 +64,7 @@ export default class App extends React.Component{
   headView = ()=>{
     return(
       <div className='head_view'>
-      <div className='title'><img className='air_icon' src={air} alt="Logo"/> AIR channel{Beta}</div>
+      <div className='title'><img className='air_icon' src={air} alt="Logo"/> AIR channel</div>
         <div className='menu'><DropdownMenu /></div>
       </div>
     )

@@ -4,7 +4,7 @@ import React from 'react';
 import './index.css'
 import api from './../api'
 import axios from 'axios'
-import ProgressBar from './../progressbar'
+import Bar from './../progressbar/transferBar'
 import colors from './../colors'
 import DownloadFileList from './downloadFileList'
 import DownloadMessageView from './downloadMessView'
@@ -150,8 +150,9 @@ export default class DownloadView extends React.Component{
     const {filename, file_size } = file
     this.setState({showProgress:true})
     const configDownload = {
-      responseType: 'arraybuffer',
+      //responseType: 'arraybuffer',
       onDownloadProgress:(progressEvent)=> {
+        console.log(progressEvent)
         this.progressAction(progressEvent, file_size)
         //this.setState({counter: percentage})
       },
@@ -160,6 +161,7 @@ export default class DownloadView extends React.Component{
       headers:{
         'Authorization': `${autori}`,
       }
+      
       
     }
     return await axios(configDownload)
@@ -227,9 +229,7 @@ export default class DownloadView extends React.Component{
     if(isContent){
       return (
         <div className='frame_input_upload' >
-          {!showProgress?
-            this.changeDownloadView():<div>{!showProgress? null: <div className='progressbar_view_download' ><ProgressBar counter={progress} bgcolor={colors.accentColor}/></div>}</div>
-          }
+          {!showProgress? this.changeDownloadView(): <div className='progressbar_view' ><Bar counter={Math.floor(progress)}/></div>}
           {files.length>0 ? <div className='download_list_view'>{this.messageView()}<DownloadFileList items={files} /></div> : null}
           
         </div>
