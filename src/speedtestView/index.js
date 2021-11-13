@@ -77,7 +77,7 @@ class SpeedtestView extends React.Component{
       const dummy = this.createUploadBlob()
       const form = new FormData()
       form.append('file', dummy)
-      const finishDownLoad = new Date().getTime() + 15000 
+      const finishDownLoad = new Date().getTime() + 8000  // 8 sec
       var runtime = new Date().getTime() 
       var startLoad = 0
       const configUpload = {
@@ -135,7 +135,7 @@ class SpeedtestView extends React.Component{
 
     downloadSpeed = async()=>{ 
       const{_url, autori} = this.getSpeedTestUrl()
-      const finishDownLoad = new Date().getTime() + 15000 // 15 seconds of upload;
+      const finishDownLoad = new Date().getTime() + 5000 // 5 seconds of upload;
       var startLoad = 0
       var startTime = 0
 
