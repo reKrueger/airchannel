@@ -154,13 +154,13 @@
   
   @keyframes g {
     0% {
-      background-color: #7db18c8e;
+      background-color: #7db18c;
     }
     50% {
       background-color: #7db18c;
     }
     100% {
-      background-color: #7db18c8e;
+      background-color: #7db18c;
     }
   }
   @keyframes r {
